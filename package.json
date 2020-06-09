@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "A simple WebRTC video chat app (React + Node)",
   "scripts": {
-    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\"",
-    "image-frontend": "cd frontend && npm run build && docker build -t janole/$npm_package_name-frontend:$npm_package_version .",
-    "image-backend": "cd backend && docker build -t janole/$npm_package_name-backend:$npm_package_version .",
-    "image": "concurrently \"npm run image-frontend\" \"npm run image-backend\""
+    "postinstall": "concurrently 'npm run install:frontend' 'npm run install:backend'",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "image": "concurrently 'npm run image:frontend' 'npm run image:backend'",
+    "image:frontend": "cd frontend && npm run build && docker build -t janole/$npm_package_name-frontend:$npm_package_version .",
+    "image:backend": "cd backend && docker build -t janole/$npm_package_name-backend:$npm_package_version .",
+    "dev": "concurrently 'cd backend && npm run dev' 'cd frontend && npm start'"
   },
   "author": "Jan Ole Suhr",
   "license": "ISC",
