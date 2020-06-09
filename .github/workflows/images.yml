@@ -1,0 +1,62 @@
+name: Docker
+
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+  # Run tests for any PRs.
+  pull_request:
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Prepare repository
+        run: |
+          git rev-list master --count
+          git log --oneline
+
+      - name: Build
+        run: npm install
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+
+      - name: Build images
+        run: |
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}
+
+          # Change all uppercase to lowercase
+          export IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          # Count the number of commits for the version number ...
+          COMMITS=$(git rev-list HEAD --count)
+          export IMAGE_VER=1.0.$COMMITS
+
+          echo IMAGE_ID=$IMAGE_ID
+          echo IMAGE_VER=$IMAGE_VER
+
+          npm run image
+
+          # show all images ...
+          docker image ls
+
+          echo "Pushing ${IMAGE_ID}/frontend:${IMAGE_VER}"
+          docker push "${IMAGE_ID}/frontend:${IMAGE_VER}"
+
+          echo "Pushing ${IMAGE_ID}/backend:${IMAGE_VER}"
+          docker push "${IMAGE_ID}/backend:${IMAGE_VER}"
+
+      - name: Log out of registry
+        run: docker logout
+  
