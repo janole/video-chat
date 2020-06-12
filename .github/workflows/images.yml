@@ -23,10 +23,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prepare repository
-        run: |
-          git rev-list master --count
-
       - name: Build
         run: npm install
 
@@ -35,21 +31,21 @@ jobs:
 
       - name: Build images
         run: |
-          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}
+          IMAGE_BASE=docker.pkg.github.com/${{ github.repository }}
 
           # Change all uppercase to lowercase
-          export IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          export IMAGE_BASE=$(echo $IMAGE_BASE | tr '[A-Z]' '[a-z]')
 
           # Count the number of commits for the version number ...
           COMMITS=$(git rev-list HEAD --count)
-          export IMAGE_VER=1.0.$COMMITS
+          export IMAGE_VERSION=1.0.$COMMITS
 
-          echo IMAGE_ID=$IMAGE_ID
-          echo IMAGE_VER=$IMAGE_VER
+          echo IMAGE_BASE=$IMAGE_BASE
+          echo IMAGE_VERSION=$IMAGE_VERSION
 
-          npm run image
+          # now build the images
+          npm run docker:build
 
-          # show all images ...
           docker image ls
 
           echo "Pushing ${IMAGE_ID}/frontend:${IMAGE_VER}"
