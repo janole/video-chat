@@ -2,14 +2,11 @@
   "name": "video-chat",
   "version": "1.0.0",
   "description": "A simple WebRTC video chat app (React + Node)",
+  "image": "janole/video-chat",
   "scripts": {
-    "postinstall": "concurrently 'npm run install:frontend' 'npm run install:backend'",
-    "install:frontend": "cd frontend && npm install",
-    "install:backend": "cd backend && npm install",
-    "image": "concurrently 'npm run image:frontend' 'npm run image:backend'",
-    "image:frontend": "cd frontend && npm run build && docker build -t ${IMAGE_ID:-janole/video-chat}/frontend:${IMAGE_VER:-dev} .",
-    "image:backend": "cd backend && docker build -t ${IMAGE_ID:-janole/video-chat}/backend:${IMAGE_VER:-dev} .",
-    "dev": "concurrently 'cd backend && npm run dev' 'cd frontend && npm start'"
+    "postinstall": "concurrently 'cd frontend && npm install' 'cd backend && npm install'",
+    "dev": "concurrently 'cd backend && npm run dev' 'cd frontend && npm start'",
+    "docker:build": "concurrently 'cd frontend && npm run docker:build' 'cd backend && npm run docker:build'"
   },
   "author": "Jan Ole Suhr",
   "license": "ISC",

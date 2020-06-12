@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "image": "janole/video-chat",
   "dependencies": {
     "@material-ui/core": "^4.10.0",
     "@material-ui/icons": "^4.9.1",
@@ -23,7 +24,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "image": "export COMMITS=$(git rev-list HEAD --count) && export IMAGE=docker.janole.com/videochat-frontend:$npm_package_version.$COMMITS && rm -rf build && react-scripts build && docker build -t $IMAGE ."
+    "predocker:build": "npm run build",
+    "docker:build": "docker build -t ${IMAGE_BASE:-$npm_package_image}/frontend:${IMAGE_VERSION:-$(npm run --silent version)} .",
+    "version": "echo $(echo $npm_package_version | sed 's/\\.[0-9]*$//').$(git rev-list HEAD --count)"
   },
   "eslintConfig": {
     "extends": "react-app"
