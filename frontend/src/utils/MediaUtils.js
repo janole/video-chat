@@ -19,7 +19,7 @@ function enumerateDevices()
 }
 */
 
-function getStream(facingMode)
+function getStream(facingMode = "user", width = 640, height = 480)
 {
     return new Promise((resolve, reject) =>
     {
@@ -27,20 +27,14 @@ function getStream(facingMode)
         {
             video:
             {
-                width: { ideal: 640, },
-                height: { ideal: 480, },
+                facingMode: facingMode,
+                width: { ideal: width, },
+                height: { ideal: height, },
             },
             audio: true
         }
 
-        if (facingMode)
-        {
-            op.video.facingMode = facingMode;
-            op.video.width = { ideal: 1280 };
-            op.video.height = { ideal: 720 };
-        }
-
-        console.log("VIDEO", op.video);
+        console.log("VIDEO", op);
 
         navigator.mediaDevices.getUserMedia(op).then(stream =>
         {
