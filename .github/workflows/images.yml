@@ -48,11 +48,11 @@ jobs:
 
           docker image ls
 
-          echo "Pushing ${IMAGE_ID}/frontend:${IMAGE_VER}"
-          docker push "${IMAGE_ID}/frontend:${IMAGE_VER}"
+          echo "Pushing ${IMAGE_BASE}/frontend:${IMAGE_VERSION}"
+          docker push "${IMAGE_BASE}/frontend:${IMAGE_VERSION}"
 
-          echo "Pushing ${IMAGE_ID}/backend:${IMAGE_VER}"
-          docker push "${IMAGE_ID}/backend:${IMAGE_VER}"
+          echo "Pushing ${IMAGE_BASE}/backend:${IMAGE_VERSION}"
+          docker push "${IMAGE_BASE}/backend:${IMAGE_VERSION}"
 
       - name: Log out of registry
         run: docker logout
