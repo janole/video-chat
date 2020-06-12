@@ -120,7 +120,7 @@ class Video extends React.Component
         socket: {},
         localStream: {},
         remoteStreams: {},
-        facingMode: null,
+        facingMode: "user",
         localDisabled: false,
         takingPhoto: false,
         token: null,
@@ -209,7 +209,7 @@ class Video extends React.Component
         this.setState({ socket: socket, flags: this.props.match.params.flags, roomId: this.props.match.params.roomId });
         const { roomId } = this.props.match.params;
 
-        this.getUserMedia().then(() =>
+        this.getUserMedia(this.state.facingMode).then(() =>
         {
             socket.emit("enter", { roomId: roomId });
         });
@@ -400,7 +400,7 @@ class Video extends React.Component
 
         // this.hack = true;
 
-        this.getUserMedia(this.state.facingMode == null ? "environment" : null).then(() => 
+        this.getUserMedia(this.state.facingMode == "user" ? "environment" : "user").then(() => 
         {
             Object.keys(this.peers).forEach(id =>
             {
