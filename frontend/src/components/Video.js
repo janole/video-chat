@@ -120,36 +120,16 @@ class Video extends React.Component
         socket: {},
         localStream: {},
         remoteStreams: {},
+        peers: {},
         facingMode: "user",
         localDisabled: false,
-        takingPhoto: false,
-        token: null,
     };
 
-    peers = {};
-
-    destroyPeer = (id) =>
-    {
-        const peers = this.peers;
-
-        if (peers[id])
-        {
-            if (peers[id].destroy !== "undefined")
-            {
-                peers[id].destroy();
-            }
-
-            delete peers[id];
-
-            const remoteStreams = { ...this.state.remoteStreams };
-            delete remoteStreams[id];
-            this.setState({ remoteStreams: remoteStreams });
-        }
-    }
+    getPeer = id => this.createPeer(id, false);
 
     createPeer = (id, initiator) =>
     {
-        const peers = this.peers;
+        const peers = this.state.peers;
 
         if (peers[id])
         {
@@ -160,7 +140,9 @@ class Video extends React.Component
 
         const peer = peers[id] = createSimplePeer(this.state.localStream, initiator);
 
-        peer.on('signal', data =>
+        this.setState({ peers: { ...peers } });
+
+        peer.on("signal", data =>
         {
             const signal =
             {
@@ -169,7 +151,7 @@ class Video extends React.Component
                 desc: data,
             }
 
-            this.state.socket.emit('signal', signal)
+            this.state.socket.emit("signal", signal)
         })
 
         peer.on("stream", stream =>
@@ -182,7 +164,7 @@ class Video extends React.Component
 
             console.log("deb.1 remote-streams", remoteStreams);
 
-            this.setState({ remoteStreams: remoteStreams });
+            this.setState({ remoteStreams });
         });
 
         peer.once("close", () =>
@@ -202,11 +184,31 @@ class Video extends React.Component
         return peer;
     };
 
+    destroyPeer = (id) =>
+    {
+        const peers = this.state.peers;
+
+        if (peers[id])
+        {
+            if (peers[id].destroy !== "undefined")
+            {
+                peers[id].destroy();
+            }
+
+            delete peers[id];
+
+            const remoteStreams = { ...this.state.remoteStreams };
+            delete remoteStreams[id];
+            this.setState({ remoteStreams, peers, });
+        }
+    }
+
     componentDidMount()
     {
         const socket = io(SIGSERV);
 
-        this.setState({ socket: socket, flags: this.props.match.params.flags, roomId: this.props.match.params.roomId });
+        this.setState({ socket });
+
         const { roomId } = this.props.match.params;
 
         this.getUserMedia(this.state.facingMode).then(() =>
@@ -216,9 +218,7 @@ class Video extends React.Component
 
         socket.on("signal", signal =>
         {
-            const peer = this.createPeer(signal.from, false);
-
-            peer.signal(signal.desc);
+            this.getPeer(signal.from).signal(signal.desc);
         });
 
         socket.on("sockets", sockets =>
@@ -244,7 +244,7 @@ class Video extends React.Component
             }
             else if (message?.type === "toggle-stream")
             {
-                console.log(message, this.peers);
+                console.log(message, this.state.peers);
 
                 const remoteStreams = { ...this.state.remoteStreams };
 
@@ -277,7 +277,7 @@ class Video extends React.Component
             }
         }
 
-        for (const peer of Object.values(this.peers))
+        for (const peer of Object.values(this.state.peers))
         {
             if (typeof peer?.destroy !== "undefined")
             {
@@ -285,9 +285,7 @@ class Video extends React.Component
             }
         }
 
-        this.peers = {};
-
-        this.setState({ socket: null, connected: false, localStream: {}, remoteStreams: {} });
+        this.setState({ socket: null, connected: false, localStream: {}, remoteStreams: {}, peers: {} });
     }
 
     onPageHide = () =>
@@ -393,18 +391,18 @@ class Video extends React.Component
             this.localVideo.srcObject = null;
         }
 
-        Object.keys(this.peers).forEach(id =>
+        Object.keys(this.state.peers).forEach(id =>
         {
-            this.peers[id].removeStream(this.state.localStream);
+            this.state.peers[id].removeStream(this.state.localStream);
         });
 
         // this.hack = true;
 
         this.getUserMedia(this.state.facingMode === "user" ? "environment" : "user").then(() => 
         {
-            Object.keys(this.peers).forEach(id =>
+            Object.keys(this.state.peers).forEach(id =>
             {
-                this.peers[id].addStream(this.state.localStream);
+                this.state.peers[id].addStream(this.state.localStream);
             });
         });
     }
