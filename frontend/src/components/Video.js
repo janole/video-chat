@@ -396,8 +396,6 @@ class Video extends React.Component
             this.state.peers[id].removeStream(this.state.localStream);
         });
 
-        // this.hack = true;
-
         this.getUserMedia(this.state.facingMode === "user" ? "environment" : "user").then(() => 
         {
             Object.keys(this.state.peers).forEach(id =>
@@ -406,23 +404,6 @@ class Video extends React.Component
             });
         });
     }
-
-    /*
-    hack = false;
-
-    onPlay = () =>
-    {
-        console.log("onPlay", this.localVideo);
-
-        // if (this.hack)
-        {
-            Object.keys(this.peers).forEach(id =>
-            {
-                this.peers[id].addStream(this.state.localStream);
-            });
-        }
-    }
-    */
 
     render()
     {
@@ -462,7 +443,6 @@ class Video extends React.Component
                             ref={this.setLocalVideoStream}
                             autoPlay
                             playsInline
-                            onPlay={this.onPlay}
                         />
                     </div>
                 }
