@@ -5,6 +5,7 @@ RUN true \
     #
     #
     && sed -i "s/AllowOverride None/AllowOverride All/" /usr/local/apache2/conf/httpd.conf \
+    && sed -i "s/#LoadModule expires_module/LoadModule expires_module/" /usr/local/apache2/conf/httpd.conf \
     && sed -i "s/#LoadModule headers_module/LoadModule headers_module/" /usr/local/apache2/conf/httpd.conf \
     && sed -i "s/#LoadModule rewrite_module/LoadModule rewrite_module/" /usr/local/apache2/conf/httpd.conf \
     && sed -i "s/#LoadModule proxy_module/LoadModule proxy_module/" /usr/local/apache2/conf/httpd.conf \

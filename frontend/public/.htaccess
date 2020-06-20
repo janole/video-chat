@@ -1,10 +1,15 @@
-<FilesMatch "\.(css|htm|html|jpe|jpeg|jpg|js|png|mp4)$">
-    <IfModule mod_headers.c>
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access 1 month"
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "(index\.html|env\.js|manifest\.json)">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
         Header set Pragma "no-cache"
         Header set Expires 0
-    </IfModule>
-</FilesMatch>
+    </FilesMatch>
+</IfModule>
 
 <IfModule mod_rewrite.c>
 
@@ -19,4 +24,3 @@
     RewriteRule ^ /index.html
 
 </IfModule>
-
