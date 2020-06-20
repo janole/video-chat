@@ -100,7 +100,7 @@ function Home(props)
             <div className={classes.background} />
 
             <div className={classes.footer}>
-                <Button startIcon={<GitHubIcon />}>github</Button>
+                <Button startIcon={<GitHubIcon />} href="https://github.com/janole/video-chat">github</Button>
             </div>
         </div>
     );
