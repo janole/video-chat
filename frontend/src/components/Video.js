@@ -114,7 +114,7 @@ const styles = theme => (
     }
 );
 
-class Video extends React.Component
+class Video extends React.PureComponent
 {
     state = {
         socket: {},
