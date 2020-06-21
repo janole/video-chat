@@ -2,8 +2,26 @@ import Peer from 'simple-peer'
 
 import { selectCodec, setMediaBitrate } from "./SdpUtils";
 
+const setAuthentication = authentication =>
+{
+    if (authentication && window._env_?.PEER_CONFIG?.iceServers?.length > 0)
+    {
+        console.log(authentication, window._env_.PEER_CONFIG);
+
+        const { username, credential } = authentication;
+
+        window._env_.PEER_CONFIG.iceServers.forEach((_, index, iceServers) =>
+        {
+            iceServers[index] = { ...iceServers[index], username, credential };
+            console.log("iceServer", index, iceServers[index]);
+        });
+    }
+};
+
 const createSimplePeer = (stream, initiator) =>
 {
+    console.log("createPeer", window._env_.PEER_CONFIG);
+
     const peer = new Peer(
         {
             initiator: initiator,
@@ -42,4 +60,4 @@ const createSimplePeer = (stream, initiator) =>
     return peer;
 }
 
-export { createSimplePeer };
+export { createSimplePeer, setAuthentication };
