@@ -4,6 +4,9 @@ var server = require("http").Server(app);
 var io = require("socket.io")(server, { path: "/", cookie: false });
 
 //
+var turnAuth = require("./turn-authentication");
+
+//
 const port = process.env.LISTEN_PORT || 4999;
 
 // Enable CORS
@@ -25,7 +28,10 @@ io.on("connection", function (socket)
 
         const room = io.of("/").in().adapter.rooms[socket.roomId];
 
-        socket.emit("sockets", room.sockets);
+        socket.emit("sockets", {
+            sockets: room.sockets,
+            authentication: process.env.SECRET && turnAuth.getCredentials(data.roomId, process.env.SECRET)
+        });
 
         console.log("enter", socket.roomId, room);
     });
