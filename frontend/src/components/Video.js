@@ -10,7 +10,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 
 import io from 'socket.io-client'
 import { getStream } from '../utils/MediaUtils';
-import { createSimplePeer } from '../utils/PeerUtils';
+import { createSimplePeer, setAuthentication } from '../utils/PeerUtils';
 
 import Notifications from './Notifications';
 
@@ -121,6 +121,7 @@ class Video extends React.PureComponent
         localStream: {},
         remoteStreams: {},
         peers: {},
+        connected: false,
         facingMode: "user",
         localDisabled: false,
     };
@@ -152,7 +153,7 @@ class Video extends React.PureComponent
             }
 
             this.state.socket.emit("signal", signal)
-        })
+        });
 
         peer.on("stream", stream =>
         {
@@ -221,9 +222,13 @@ class Video extends React.PureComponent
             this.getPeer(signal.from).signal(signal.desc);
         });
 
-        socket.on("sockets", sockets =>
+        socket.on("sockets", ({ sockets, authentication }) =>
         {
-            console.log("sockets", socket.id, sockets);
+            console.log("sockets", socket.id, sockets, authentication);
+
+            setAuthentication(authentication);
+
+            this.setState({ connected: true });
 
             for (const id in sockets)
             {
@@ -409,13 +414,12 @@ class Video extends React.PureComponent
     {
         const { classes } = this.props;
 
-        const remoteStreamsCount = Object.values(this.state.remoteStreams).reduce((count, stream) => count += stream._enabled !== false ? 1 : 0, 0);
-
-        const connected = remoteStreamsCount > 0;
+        const remoteUsers = Object.keys(this.state.remoteStreams).length;
+        const activeUsers = Object.values(this.state.remoteStreams).reduce((count, stream) => count += stream._enabled !== false ? 1 : 0, 0);
 
         let localVideoClass, remoteVideoClass;
 
-        if (!connected)
+        if (activeUsers === 0)
         {
             localVideoClass = classes.fullVideo;
             remoteVideoClass = classes.hidden;
@@ -425,7 +429,7 @@ class Video extends React.PureComponent
             localVideoClass = classes.floatingVideo;
             remoteVideoClass = classes.fullVideo;
 
-            if (remoteStreamsCount > 1)
+            if (activeUsers > 1)
             {
                 localVideoClass = remoteVideoClass = classes.halfVideo;
             }
@@ -462,10 +466,10 @@ class Video extends React.PureComponent
                     ))
                 }
 
-                <Notifications connected={connected} />
+                <Notifications connected={this.state.connected} active={remoteUsers > 0} />
 
                 <div className={classes.bottomRightButtons}>
-                    {connected &&
+                    {remoteUsers > 0 &&
                         <>
                             <IconButton className={classes.hoverButton} onClick={e => this.toggleCamera(e)}>
                                 <FlipCameraIcon />

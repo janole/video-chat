@@ -34,6 +34,10 @@ function Notifications(props)
 
     if (!props.connected)
     {
+        elements.push({ id: 1, severity: "info", text: "Connecting ..." });
+    }
+    else if (!props.active)
+    {
         elements.push({ id: 1, severity: "info", text: "Waiting for somebody to join ..." });
     }
 
