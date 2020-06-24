@@ -53,8 +53,7 @@ jobs:
       - name: Remove latest frontend package
         uses: actions/delete-package-versions@v1
         with:
-          package-version-ids: 'latest'
-          package-name: ${{ github.repository }}/frontend
+          package-name: ${{ github.repository }}/frontend:latest
 
       - name: Log out of registry
         run: docker logout
