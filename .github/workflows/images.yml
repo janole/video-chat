@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - dev
     tags:
       - v*
 
@@ -41,19 +42,14 @@ jobs:
           npm run docker:build
 
           echo "Pushing ${IMAGE_BASE}/frontend:${IMAGE_VERSION}"
+          docker tag "${IMAGE_BASE}/frontend:${IMAGE_VERSION}" "${IMAGE_BASE}/frontend:latest"
+          docker push "${IMAGE_BASE}/frontend:latest"
           docker push "${IMAGE_BASE}/frontend:${IMAGE_VERSION}"
-          ##docker tag "${IMAGE_BASE}/frontend:${IMAGE_VERSION}" "${IMAGE_BASE}/frontend:latest"
-          ##docker push "${IMAGE_BASE}/frontend:latest"
 
           echo "Pushing ${IMAGE_BASE}/backend:${IMAGE_VERSION}"
+          docker tag "${IMAGE_BASE}/backend:${IMAGE_VERSION}" "${IMAGE_BASE}/backend:latest"
+          docker push "${IMAGE_BASE}/backend:latest"
           docker push "${IMAGE_BASE}/backend:${IMAGE_VERSION}"
-          ##docker tag "${IMAGE_BASE}/backend:${IMAGE_VERSION}" "${IMAGE_BASE}/backend:latest"
-          ##docker push "${IMAGE_BASE}/backend:latest"
-
-      - name: Remove latest frontend package
-        uses: actions/delete-package-versions@v1
-        with:
-          package-name: ${{ github.repository }}/frontend:latest
 
       - name: Log out of registry
         run: docker logout
