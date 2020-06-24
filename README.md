@@ -25,6 +25,10 @@ There are two simple Dockerfiles included in the project. You can build both the
 $ npm run docker:build
 ```
 
+### Configuration
+
+#### Backend
+
 The configuration of the backend is done via two __ENVIRONMENT__ variables:
 
 |Name           |Description                                                         |Default
@@ -32,5 +36,6 @@ The configuration of the backend is done via two __ENVIRONMENT__ variables:
 |__SECRET__     |The auth secret used for accessing the TURN server via TURN REST API|__None__
 |__LISTEN_PORT__|The port number for the socket.io signalling server                 |__4999__
 
-The configuration of the frontend is (currently) done by volume-sharing the [env.js](https://github.com/janole/video-chat/blob/master/frontend/public/env.js) file to ``/usr/local/apache2/htdocs/env.js`` into the running frontend container.
+#### Frontend
 
+The configuration of the frontend is (currently) done by volume-sharing the [env.js](https://github.com/janole/video-chat/blob/master/frontend/public/env.js) file to: ``/usr/local/apache2/htdocs/env.js`` into the running frontend container.
