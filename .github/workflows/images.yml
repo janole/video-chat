@@ -40,8 +40,6 @@ jobs:
           # now build the images
           npm run docker:build
 
-          docker image ls
-
           echo "Pushing ${IMAGE_BASE}/frontend:${IMAGE_VERSION}"
           docker tag "${IMAGE_BASE}/frontend:${IMAGE_VERSION}" "${IMAGE_BASE}/frontend:latest"
           docker push "${IMAGE_BASE}/frontend:latest"
