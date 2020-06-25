@@ -26,7 +26,7 @@ jobs:
 
       - name: Build images
         run: |
-          IMAGE_BASE=docker.pkg.github.com/${{ github.repository }}
+          IMAGE_BASE=docker.pkg.github.com/${{ github.repository }}/
 
           # Change all uppercase to lowercase
           export IMAGE_BASE=$(echo $IMAGE_BASE | tr '[A-Z]' '[a-z]')
@@ -41,15 +41,15 @@ jobs:
           # now build the images
           npm run docker:build
 
-          echo "Pushing ${IMAGE_BASE}/frontend:${IMAGE_VERSION}"
-          ##docker tag "${IMAGE_BASE}/frontend:${IMAGE_VERSION}" "${IMAGE_BASE}/frontend:latest"
-          ##docker push "${IMAGE_BASE}/frontend:latest"
-          docker push "${IMAGE_BASE}/frontend:${IMAGE_VERSION}"
+          echo "Pushing ${IMAGE_BASE}frontend:${IMAGE_VERSION}"
+          ##docker tag "${IMAGE_BASE}frontend:${IMAGE_VERSION}" "${IMAGE_BASE}frontend:latest"
+          ##docker push "${IMAGE_BASE}frontend:latest"
+          docker push "${IMAGE_BASE}frontend:${IMAGE_VERSION}"
 
-          echo "Pushing ${IMAGE_BASE}/backend:${IMAGE_VERSION}"
-          ##docker tag "${IMAGE_BASE}/backend:${IMAGE_VERSION}" "${IMAGE_BASE}/backend:latest"
-          ##docker push "${IMAGE_BASE}/backend:latest"
-          docker push "${IMAGE_BASE}/backend:${IMAGE_VERSION}"
+          echo "Pushing ${IMAGE_BASE}backend:${IMAGE_VERSION}"
+          ##docker tag "${IMAGE_BASE}backend:${IMAGE_VERSION}" "${IMAGE_BASE}backend:latest"
+          ##docker push "${IMAGE_BASE}backend:latest"
+          docker push "${IMAGE_BASE}backend:${IMAGE_VERSION}"
 
       - name: Log out of registry
         run: docker logout

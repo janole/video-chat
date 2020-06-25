@@ -1,11 +1,11 @@
 {
   "name": "server",
   "version": "0.1.0",
-  "image": "janole/video-chat",
+  "imageBase": "janole/video-chat-",
   "scripts": {
     "start": "node server",
     "dev": "nodemon server",
-    "docker:build": "docker build -t ${IMAGE_BASE:-$npm_package_image}/backend:${IMAGE_VERSION:-$(npm run --silent version)} .",
+    "docker:build": "docker build -t ${IMAGE_BASE:-$npm_package_imageBase}backend:${IMAGE_VERSION:-$(npm run --silent version)} .",
     "version": "echo $(echo $npm_package_version | sed 's/\\.[0-9]*$//').$(git rev-list HEAD --count)"
   },
   "dependencies": {
