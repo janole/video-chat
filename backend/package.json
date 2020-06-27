@@ -1,6 +1,8 @@
 {
   "name": "server",
   "version": "0.1.0",
+  "author": "Jan Ole Suhr <ole@janole.com> (https://janole.com)",
+  "license": "MIT",
   "imageBase": "janole/video-chat-",
   "scripts": {
     "start": "node server",
