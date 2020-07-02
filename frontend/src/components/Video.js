@@ -10,11 +10,9 @@ import CancelIcon from '@material-ui/icons/Cancel';
 
 import io from 'socket.io-client'
 import { getStream } from '../utils/MediaUtils';
-import { createSimplePeer, setAuthentication } from '../utils/PeerUtils';
+import { createSimplePeer } from '../utils/PeerUtils';
 
 import Notifications from './Notifications';
-
-const SIGSERV = window._env_?.SIGNAL_SERVER;
 
 const styles = theme => (
     {
@@ -124,6 +122,7 @@ class Video extends React.PureComponent
         connected: false,
         facingMode: "user",
         localDisabled: false,
+        peerConfig: {},
     };
 
     getPeer = id => this.createPeer(id, false);
@@ -139,7 +138,7 @@ class Video extends React.PureComponent
             return peers[id];
         }
 
-        const peer = peers[id] = createSimplePeer(this.state.localStream, initiator);
+        const peer = peers[id] = createSimplePeer(this.state.localStream, initiator, this.state.peerConfig);
 
         this.setState({ peers: { ...peers } });
 
@@ -206,11 +205,11 @@ class Video extends React.PureComponent
 
     componentDidMount()
     {
-        const socket = io(SIGSERV);
+        const socket = io(this.props.signalServer);
 
         this.setState({ socket });
 
-        const { roomId } = this.props.match.params;
+        const roomId = this.props.roomId;
 
         this.getUserMedia(this.state.facingMode).then(() =>
         {
@@ -222,13 +221,11 @@ class Video extends React.PureComponent
             this.getPeer(signal.from).signal(signal.desc);
         });
 
-        socket.on("sockets", ({ sockets, authentication }) =>
+        socket.on("sockets", ({ sockets, peerConfig }) =>
         {
-            console.log("sockets", socket.id, sockets, authentication);
+            console.log("sockets", socket.id, sockets, peerConfig);
 
-            setAuthentication(authentication);
-
-            this.setState({ connected: true });
+            this.setState({ connected: true, peerConfig });
 
             for (const id in sockets)
             {
@@ -380,7 +377,7 @@ class Video extends React.PureComponent
 
                 this.setState({ localDisabled: !track.enabled });
 
-                this.state.socket.emit("message", { room: this.props.match.params.roomId, data: { type: "toggle-stream", from: this.state.socket.id, enabled: track.enabled } });
+                this.state.socket.emit("message", { room: this.props.roomId, data: { type: "toggle-stream", from: this.state.socket.id, enabled: track.enabled } });
 
                 break;
             }
@@ -479,9 +476,11 @@ class Video extends React.PureComponent
                             </IconButton>
                         </>
                     }
-                    <IconButton className={classes.hoverButton} onClick={e => this.props.history.push("/")}>
-                        <CancelIcon />
-                    </IconButton>
+                    {this.props.closeAction &&
+                        <IconButton className={classes.hoverButton} onClick={this.props.closeAction}>
+                            <CancelIcon />
+                        </IconButton>
+                    }
                 </div>
             </div >
         )
