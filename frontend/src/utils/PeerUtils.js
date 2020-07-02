@@ -2,62 +2,57 @@ import Peer from 'simple-peer'
 
 import { selectCodec, setMediaBitrate } from "./SdpUtils";
 
-const setAuthentication = authentication =>
+const createSimplePeer = (stream, initiator, config) =>
 {
-    if (authentication && window._env_?.PEER_CONFIG?.iceServers?.length > 0)
-    {
-        console.log(authentication, window._env_.PEER_CONFIG);
+    console.log("createPeer", config);
 
-        const { username, credential } = authentication;
+    const {
+        PEER_ICE_TRANSPORT_POLICY,
+        PEER_VIDEO_CODEC,
+        PEER_AUDIO_CODEC,
+        PEER_VIDEO_BITRATE,
+        PEER_ICE_SERVERS,
+        PEER_DEBUG,
+    } = config || {};
 
-        window._env_.PEER_CONFIG.iceServers.forEach((_, index, iceServers) =>
-        {
-            iceServers[index] = { ...iceServers[index], username, credential };
-            console.log("iceServer", index, iceServers[index]);
-        });
-    }
-};
-
-const createSimplePeer = (stream, initiator) =>
-{
-    console.log("createPeer", window._env_.PEER_CONFIG);
+    console.log(config, PEER_ICE_TRANSPORT_POLICY);
 
     const peer = new Peer(
         {
             initiator: initiator,
             stream: stream,
             trickle: true,
-            iceTransportPolicy: window._env_.PEER_ICE_TRANSPORT_POLICY,
+            iceTransportPolicy: PEER_ICE_TRANSPORT_POLICY || "all",
             sdpTransform: sdp =>
             {
-                if (window._env_.PEER_VIDEO_CODEC)
+                if (PEER_VIDEO_CODEC)
                 {
-                    sdp = selectCodec(sdp, "video", window._env_.PEER_VIDEO_CODEC);
+                    sdp = selectCodec(sdp, "video", PEER_VIDEO_CODEC);
                 }
 
-                if (window._env_.PEER_AUDIO_CODEC)
+                if (PEER_AUDIO_CODEC)
                 {
-                    sdp = selectCodec(sdp, "audio", window._env_.PEER_AUDIO_CODEC);
+                    sdp = selectCodec(sdp, "audio", PEER_AUDIO_CODEC);
                 }
 
-                if (window._env_.PEER_VIDEO_BITRATE)
+                if (PEER_VIDEO_BITRATE)
                 {
-                    sdp = setMediaBitrate(sdp, "video", window._env_.PEER_VIDEO_BITRATE);
+                    sdp = setMediaBitrate(sdp, "video", PEER_VIDEO_BITRATE);
                 }
 
                 // console.log(sdp);
 
                 return sdp;
             },
-            config: window._env_.PEER_CONFIG,
+            config: { iceServers: PEER_ICE_SERVERS || [] },
         });
 
-    if (window._env_.PEER_DEBUG)
+    if (PEER_DEBUG)
     {
-        peer._debug = window._env_.PEER_DEBUG;
+        peer._debug = PEER_DEBUG;
     }
 
     return peer;
 }
 
-export { createSimplePeer, setAuthentication };
+export { createSimplePeer };
