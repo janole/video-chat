@@ -1,10 +1,10 @@
 //
-var app = require("express")();
-var server = require("http").Server(app);
-var io = require("socket.io")(server, { path: "/", cookie: false });
+const app = require("express")();
+const server = require("http").Server(app);
+const io = require("socket.io")(server, { path: "/", cookie: false });
 
 //
-var turnAuth = require("./turn-authentication");
+const peerConfig = require("./peer-config");
 
 //
 const port = process.env.LISTEN_PORT || 4999;
@@ -27,13 +27,14 @@ io.on("connection", function (socket)
         socket.roomId = data.roomId;
 
         const room = io.of("/").in().adapter.rooms[socket.roomId];
+        const config = peerConfig.get(data.roomId, process.env.TURN_SECRET);
 
         socket.emit("sockets", {
             sockets: room.sockets,
-            authentication: process.env.SECRET && turnAuth.getCredentials(data.roomId, process.env.SECRET)
+            peerConfig: config,
         });
 
-        console.log("enter", socket.roomId, room);
+        console.log("enter", socket.roomId, room, config);
     });
 
     socket.on("disconnect", () =>
