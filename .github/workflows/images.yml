@@ -31,9 +31,8 @@ jobs:
           # Change all uppercase to lowercase
           export IMAGE_BASE=$(echo $IMAGE_BASE | tr '[A-Z]' '[a-z]')
 
-          # Count the number of commits for the version number ...
-          COMMITS=$(git rev-list HEAD --count)
-          export IMAGE_VERSION=1.0.$COMMITS
+          # Get the version and build number from the script
+          export IMAGE_VERSION=$(npm run --silent version)
 
           echo IMAGE_BASE=$IMAGE_BASE
           echo IMAGE_VERSION=$IMAGE_VERSION
