@@ -5,6 +5,8 @@ import { Container, Box, Card, CardContent, Typography, TextField, CardActions, 
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import GitHubIcon from '@material-ui/icons/GitHub';
 
+import { version as PACKAGE_VERSION } from "../../package.json";
+
 const homeStyles = makeStyles(theme =>
     ({
         background:
@@ -101,6 +103,7 @@ function Home(props)
 
             <div className={classes.footer}>
                 <Button startIcon={<GitHubIcon />} href="https://github.com/janole/video-chat">github</Button>
+                <Button disabled style={{ textTransform: "none" }}>v {process.env.REACT_APP_VERSION || PACKAGE_VERSION}</Button>
             </div>
         </div>
     );
