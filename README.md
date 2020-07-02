@@ -29,12 +29,14 @@ $ npm run docker:build
 
 #### Backend
 
-The configuration of the backend is done via two __ENVIRONMENT__ variables:
+The configuration of the backend is done through __ENVIRONMENT__ variables:
 
-|Name           |Description                                                         |Default
-|---------------|--------------------------------------------------------------------|--------
-|__SECRET__     |The auth secret used for accessing the TURN server via TURN REST API|__None__
-|__LISTEN_PORT__|The port number for the socket.io signalling server                 |__4999__
+|Name            |Description                                                         |Default
+|----------------|--------------------------------------------------------------------|--------
+|__LISTEN_PORT__ |The port number for the socket.io signaling server                  |__4999__
+|__TURN_SERVERS__|A comma-separated list of TURN servers ("turn:server.com")          |__None__
+|__TURN_SECRET__ |The auth secret used for accessing the TURN server via TURN REST API|__None__
+|__STUN_SERVERS__|A comma-separated list of STUN servers ("stun:server.com")          |__None__
 
 #### Frontend
 
