@@ -27,7 +27,7 @@ $ npm run docker:build
 
 ### Configuration
 
-#### Backend
+#### Backend/Signaling Server
 
 The configuration of the backend is done through __ENVIRONMENT__ variables:
 
@@ -41,3 +41,23 @@ The configuration of the backend is done through __ENVIRONMENT__ variables:
 #### Frontend
 
 The configuration of the frontend is (currently) done by volume-sharing the [env.js](https://github.com/janole/video-chat/blob/master/frontend/public/env.js) file to: ``/usr/local/apache2/htdocs/env.js`` into the running frontend container.
+
+#### STUN/TURN server setup (coturn)
+
+Start the coturn docker image [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn) with the following parameters:
+
+```Dockerfile
+services:
+  coturn:
+    image: instrumentisto/coturn
+    network_mode: host
+    volumes:
+      - "./coturn:/var/lib/coturn"
+    command: ["-a", "-f", "--realm=videochat", "--log-file=stdout", "--min-port=49160", "--max-port=49200", "--external-ip=$$(detect-external-ip)", "--use-auth-secret", "--static-auth-secret=the-turn-secret-see-above"]
+```
+
+* Configure the firewall to open up UDP ports `--min-port` to `--max-port` (49160-49200 in the example above.)
+* The `--static-auth-secret` needs to be the same as the `TURN_SECRET` configured for the signaling server.
+
+---
+## Have fun!
