@@ -112,6 +112,18 @@ const styles = theme => (
     }
 );
 
+/**
+ * The Video-Chat Component
+ *
+ * @component
+ * 
+ * @example
+ * const roomId = "chat-1";
+ * const signalServer = "wss://server.com";
+ * return (
+ *      <Video roomId={roomId} signalServer={signalServer} />
+ * );
+ */
 class Video extends React.PureComponent
 {
     state = {
@@ -156,8 +168,6 @@ class Video extends React.PureComponent
 
         peer.on("stream", stream =>
         {
-            // if (this.state.remoteStreams[id]) return;
-
             const remoteStreams = { ...this.state.remoteStreams };
 
             remoteStreams[id] = stream;
@@ -199,6 +209,7 @@ class Video extends React.PureComponent
 
             const remoteStreams = { ...this.state.remoteStreams };
             delete remoteStreams[id];
+
             this.setState({ remoteStreams, peers, });
         }
     }
@@ -223,7 +234,7 @@ class Video extends React.PureComponent
 
         socket.on("sockets", ({ sockets, peerConfig }) =>
         {
-            console.log("sockets", socket.id, sockets, peerConfig);
+            // console.log("sockets", socket.id, sockets, peerConfig);
 
             this.setState({ connected: true, peerConfig });
 
@@ -238,7 +249,7 @@ class Video extends React.PureComponent
 
         socket.on("message", message =>
         {
-            console.log("message", socket.id, message);
+            // console.log("message", socket.id, message);
 
             if (message?.type === "disconnected")
             {
