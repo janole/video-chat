@@ -25,7 +25,7 @@
         "origin": "AUTHORED",
         "exported": true
     },
-    "janole.video-chat/peer-utils@0.0.8": {
+    "janole.video-chat/peer-utils@0.0.9": {
         "files": [
             {
                 "relativePath": "src/utils/PeerUtils.js",
@@ -37,7 +37,7 @@
         "origin": "AUTHORED",
         "exported": true
     },
-    "janole.video-chat/sdp-utils@0.0.9": {
+    "janole.video-chat/sdp-utils@0.1.10": {
         "files": [
             {
                 "relativePath": "src/utils/SdpUtils.js",
@@ -49,7 +49,7 @@
         "origin": "AUTHORED",
         "exported": true
     },
-    "janole.video-chat/video@0.0.9": {
+    "janole.video-chat/video@0.0.10": {
         "files": [
             {
                 "relativePath": "src/components/Video.js",
