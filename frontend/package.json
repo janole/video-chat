@@ -12,7 +12,17 @@
     "react-app-polyfill": "^1.0.6",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.1",
+    "react-scripts": "^3.4.3",
+    "simple-peer": "^9.7.2",
+    "socket.io-client": "^2.3.0",
+    "webrtc-adapter": "^7.6.2"
+  },
+  "peerDependencies": {
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "@material-ui/core": "^4.10.2",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "simple-peer": "^9.7.2",
     "socket.io-client": "^2.4.0",
     "webrtc-adapter": "^7.6.2"
@@ -40,5 +50,21 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "bit": {
+    "env": {
+      "compiler": "bit.envs/compilers/react@1.0.20"
+    },
+    "componentsDefaultDirectory": "components/{name}",
+    "packageManager": "npm",
+    "overrides": {
+      "janole.video-chat/video": {
+        "dependencies": {
+          "simple-peer": "+",
+          "socket.io-client": "+",
+          "webrtc-adapter": "+"
+        }
+      }
+    }
   }
 }

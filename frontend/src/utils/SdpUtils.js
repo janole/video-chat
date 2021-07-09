@@ -1,3 +1,15 @@
+/**
+ * change the default codec of a prepared WebRTC SDP
+ * 
+ * @param sdp the prepared SDP from simple-peer's sdpTransform()
+ * @param type the codec type ("video" or "audio")
+ * @param codec the codec to be used (e.g. "VP8")
+ * 
+ * @returns {string} the modified SDP
+ * 
+ * @example
+ * sdp = selectCodec(sdp, "video", "VP9")
+ */
 function selectCodec(sdp, type, codec)
 {
     const mLine = sdp.match(new RegExp("m=" + type + ".*"));
@@ -38,19 +50,28 @@ function selectCodec(sdp, type, codec)
     return changed;
 }
 
-function setMediaBitrate(sdp, media, bandwidth)
+/**
+ * change the bitrate of a prepared WebRTC SDP
+ * 
+ * @param sdp the prepared SDP from simple-peer's sdpTransform()
+ * @param type the media type ("video" or "audio")
+ * @param bitrate the bitrate to be used
+ * 
+ * @returns {string} the modified SDP
+ */
+function setMediaBitrate(sdp, media, bitrate)
 {
-    var bandwidthLine;
+    var bitrateLine;
 
     var isFirefox = typeof InstallTrigger !== 'undefined';
 
     if (isFirefox)
     {
-        bandwidthLine = "b=TIAS:" + (bandwidth >>> 0) * 1000;
+        bitrateLine = "b=TIAS:" + (bitrate >>> 0) * 1000;
     }
     else
     {
-        bandwidthLine = "b=AS:" + bandwidth;
+        bitrateLine = "b=AS:" + bitrate;
     }
 
     var lines = sdp.split("\n");
@@ -80,19 +101,26 @@ function setMediaBitrate(sdp, media, bandwidth)
 
     if (lines[line].indexOf("b") === 0)
     {
-        lines[line] = bandwidthLine;
+        lines[line] = bitrateLine;
     }
     else
     {
-        lines.splice(line, 0, bandwidthLine);
+        lines.splice(line, 0, bitrateLine);
     }
 
     return lines.join("\n")
 }
 
-function removeBandwidthRestriction(sdp)
+/**
+ * remove any bitrate restriction from a prepared WebRTC SDP
+ * 
+ * @param sdp the prepared SDP from simple-peer's sdpTransform()
+ * 
+ * @returns {string} the modified SDP
+ */
+function removeBitrateRestriction(sdp)
 {
     return sdp.replace(/b=AS:.*\r\n/, "").replace(/b=TIAS:.*\r\n/, "");
 }
 
-export { selectCodec, setMediaBitrate, removeBandwidthRestriction };
+export { selectCodec, setMediaBitrate, removeBitrateRestriction };
