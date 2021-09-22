@@ -1,58 +1,58 @@
 import React, { useState } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { Container, Box, Card, CardContent, Typography, TextField, CardActions, Button, CardHeader, } from '@material-ui/core';
-import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
-import GitHubIcon from '@material-ui/icons/GitHub';
+import { makeStyles } from '@mui/material/styles';
+import { Container, Box, Card, CardContent, Typography, TextField, CardActions, Button, CardHeader, } from '@mui/material';
+import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 import { version as PACKAGE_VERSION } from "../../package.json";
 
 const homeStyles = makeStyles(theme =>
-    ({
-        background:
+({
+    background:
+    {
+        position: "fixed",
+        left: 0, right: 0, top: 0, bottom: 0,
+        backgroundImage: "linear-gradient(to bottom, #FFF 10%, #F0F0FFFF 15%, #F0F0FFFF 80%, #FFF 90%)",
+        backgroundSize: "cover",
+        backgroundPosition: "50% 75%",
+        width: "100%",
+        height: "100vh",
+        zIndex: -2,
+    },
+    bgvideo:
+    {
+        position: "fixed",
+        left: 0, right: 0, top: "15%", bottom: "80%",
+        width: "100%",
+        height: "65%",
+        zIndex: -1,
+        "& video":
         {
-            position: "fixed",
-            left: 0, right: 0, top: 0, bottom: 0,
-            backgroundImage: "linear-gradient(to bottom, #FFF 10%, #F0F0FFFF 15%, #F0F0FFFF 80%, #FFF 90%)",
-            backgroundSize: "cover",
-            backgroundPosition: "50% 75%",
             width: "100%",
-            height: "100vh",
-            zIndex: -2,
+            height: "100%",
+            objectFit: "cover",
         },
-        bgvideo:
-        {
-            position: "fixed",
-            left: 0, right: 0, top: "15%", bottom: "80%",
-            width: "100%",
-            height: "65%",
-            zIndex: -1,
-            "& video":
-            {
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-            },
-        },
-        box:
-        {
-            paddingTop: "5%",
-        },
-        cardHeader:
-        {
-            background: 'linear-gradient(45deg, #CC88FF 20%, #223377 90%)',
-            color: theme.palette.primary.contrastText,
-            padding: theme.spacing(0.72),
-        },
-        footer:
-        {
-            position: "fixed",
-            textAlign: "right",
-            bottom: theme.spacing(1),
-            left: theme.spacing(1),
-            right: theme.spacing(1),
-        }
-    }));
+    },
+    box:
+    {
+        paddingTop: "5%",
+    },
+    cardHeader:
+    {
+        background: 'linear-gradient(45deg, #CC88FF 20%, #223377 90%)',
+        color: theme.palette.primary.contrastText,
+        padding: theme.spacing(0.72),
+    },
+    footer:
+    {
+        position: "fixed",
+        textAlign: "right",
+        bottom: theme.spacing(1),
+        left: theme.spacing(1),
+        right: theme.spacing(1),
+    }
+}));
 
 function Home(props)
 {

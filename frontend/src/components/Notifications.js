@@ -1,8 +1,8 @@
 import React from 'react'
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/material/styles';
 
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert from '@mui/lab/Alert';
 
 const styles = theme => (
     {
