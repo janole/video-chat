@@ -1,12 +1,12 @@
 import React from 'react'
 
-import { IconButton } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { IconButton } from '@mui/material';
+import { withStyles } from '@mui/material/styles';
 
-import FlipCameraIcon from '@material-ui/icons/FlipCameraAndroid';
-import VideocamOnIcon from '@material-ui/icons/Visibility';
-import VideocamOffIcon from '@material-ui/icons/VisibilityOff';
-import CancelIcon from '@material-ui/icons/Cancel';
+import FlipCameraIcon from '@mui/icons-material/FlipCameraAndroid';
+import VideocamOnIcon from '@mui/icons-material/Visibility';
+import VideocamOffIcon from '@mui/icons-material/VisibilityOff';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 import io from 'socket.io-client'
 import { getStream } from '../utils/MediaUtils';
