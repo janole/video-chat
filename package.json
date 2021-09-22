@@ -5,7 +5,7 @@
   "homepage": "https://video.janole.com",
   "image": "janole/video-chat",
   "scripts": {
-    "postinstall": "concurrently 'cd frontend && npm install' 'cd backend && npm install'",
+    "postinstall": "concurrently 'cd frontend && npm ci' 'cd backend && npm ci'",
     "dev": "concurrently 'cd backend && npm run dev' 'cd frontend && npm start'",
     "docker:build": "concurrently 'cd frontend && npm run docker:build' 'cd backend && npm run docker:build'",
     "version": "echo $(echo $npm_package_version | sed 's/\\.[0-9]*$//').$(git rev-list HEAD --count)"
