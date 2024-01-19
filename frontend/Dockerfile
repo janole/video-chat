@@ -10,11 +10,10 @@ RUN true \
     && sed -i "s/#LoadModule rewrite_module/LoadModule rewrite_module/" /usr/local/apache2/conf/httpd.conf \
     && sed -i "s/#LoadModule proxy_module/LoadModule proxy_module/" /usr/local/apache2/conf/httpd.conf \
     && sed -i "s/#LoadModule proxy_http_module/LoadModule proxy_http_module/" /usr/local/apache2/conf/httpd.conf \
-    && sed -i "s/#LoadModule ssl_module/LoadModule ssl_module/" /usr/local/apache2/conf/httpd.conf \
+    && sed -i "s/#LoadModule mpm_prefork_module/LoadModule mpm_prefork_module/" /usr/local/apache2/conf/httpd.conf \
+    && sed -i "s/LoadModule mpm_event_module/#LoadModule mpm_event_module/" /usr/local/apache2/conf/httpd.conf \
     #
     #
-    #
-    && echo "SSLProxyEngine on" >> /usr/local/apache2/conf/httpd.conf \
     #
     && true
 
