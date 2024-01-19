@@ -1,6 +1,6 @@
 {
   "name": "video-chat-frontend",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": "Jan Ole Suhr <ole@janole.com> (https://janole.com)",
   "license": "MIT",
   "imageBase": "janole/video-chat-",
