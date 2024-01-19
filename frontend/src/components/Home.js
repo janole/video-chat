@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 
-import { makeStyles } from '@mui/material/styles';
-import { Container, Box, Card, CardContent, Typography, TextField, CardActions, Button, CardHeader, } from '@mui/material';
+import { Container, Box, Card, CardContent, Typography, TextField, CardActions, Button, CardHeader } from '@mui/material';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
 import { version as PACKAGE_VERSION } from "../../package.json";
 
-const homeStyles = makeStyles(theme =>
-({
+const sxHome =
+{
     background:
     {
         position: "fixed",
@@ -41,23 +40,21 @@ const homeStyles = makeStyles(theme =>
     cardHeader:
     {
         background: 'linear-gradient(45deg, #CC88FF 20%, #223377 90%)',
-        color: theme.palette.primary.contrastText,
-        padding: theme.spacing(0.72),
+        color: theme => theme.palette.primary.contrastText,
+        padding: 0.72,
     },
     footer:
     {
         position: "fixed",
         textAlign: "right",
-        bottom: theme.spacing(1),
-        left: theme.spacing(1),
-        right: theme.spacing(1),
-    }
-}));
+        bottom: 1,
+        left: 1,
+        right: 1,
+    },
+}
 
 function Home(props)
 {
-    const classes = homeStyles();
-
     const [code, setCode] = useState("");
 
     const startCall = () => 
@@ -66,13 +63,13 @@ function Home(props)
     };
 
     return (
-        <div>
+        <Box>
             <Container maxWidth="sm">
-                <Box mt={2} p={2} className={classes.box}>
+                <Box mt={2} p={2} sx={sxHome.box}>
                     <Card elevation={8}>
-                        <CardHeader className={classes.cardHeader}></CardHeader>
+                        <CardHeader sx={sxHome.cardHeader}></CardHeader>
                         <CardContent>
-                            <Typography variant="h4" component="h4" color="textPrimary" gutterBottom style={{ fontWeight: 900 }}>
+                            <Typography variant="h4" component="h4" color="textPrimary" gutterBottom style={{ fontWeight: 700 }}>
                                 Simple Video-Chat Demo
                             </Typography>
 
@@ -93,19 +90,19 @@ function Home(props)
                 </Box>
             </Container>
 
-            <div className={classes.bgvideo}>
+            <Box sx={sxHome.bgvideo}>
                 <video loop muted autoPlay playsInline disablePictureInPicture>
                     <source src="background.mp4" type="video/mp4" />
                 </video>
-            </div>
+            </Box>
 
-            <div className={classes.background} />
+            <Box sx={sxHome.background} />
 
-            <div className={classes.footer}>
-                <Button startIcon={<GitHubIcon />} href="https://github.com/janole/video-chat">github</Button>
+            <Box sx={sxHome.footer}>
+                <Button color="inherit" startIcon={<GitHubIcon />} href="https://github.com/janole/video-chat">github</Button>
                 <Button disabled style={{ textTransform: "none" }}>v {process.env.REACT_APP_VERSION || PACKAGE_VERSION}</Button>
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }
 

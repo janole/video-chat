@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { IconButton } from '@mui/material';
-import { withStyles } from '@mui/material/styles';
+import { Box, IconButton, alpha } from '@mui/material';
 
 import FlipCameraIcon from '@mui/icons-material/FlipCameraAndroid';
 import VideocamOnIcon from '@mui/icons-material/Visibility';
@@ -14,103 +13,102 @@ import { createSimplePeer } from '../utils/PeerUtils';
 
 import Notifications from './Notifications';
 
-const styles = theme => (
+const sx =
+{
+    videoWrapper:
     {
-        videoWrapper:
-        {
-            display: "flex",
-            flexWrap: "wrap",
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-        },
-        hidden:
-        {
-            display: "none",
-        },
-        floatingVideo:
-        {
-            position: "absolute",
-            top: theme.spacing(2),
-            right: theme.spacing(2),
-            minWidth: "100px",
-            width: "25%",
-            height: "30%",
-            zIndex: 100,
-            backgroundColor: "#FFF",
-            padding: "2px",
-            borderRadius: "8px",
-            boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 3px -2px, rgba(0, 0, 0, 0.14) 0px 3px 4px 0px, rgba(0, 0, 0, 0.12) 0px 1px 8px 0px",
-            '& video':
-            {
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                borderRadius: "6px",
-            }
-        },
-        fullVideo:
-        {
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "#010101",
-            borderRadius: 0,
-            '& video':
-            {
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-            }
-        },
-        halfVideo:
-        {
-            width: "50%",
-            height: "50%",
-            flex: "0 0 50%",
-            backgroundColor: "#010101",
-            borderRadius: 0,
-            '& video':
-            {
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-            }
-        },
-        roundedVideo:
+        display: "flex",
+        flexWrap: "wrap",
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
+    hidden:
+    {
+        display: "none",
+    },
+    floatingVideo:
+    {
+        position: "absolute",
+        top: 2,
+        right: 2,
+        minWidth: "100px",
+        width: "25%",
+        height: "30%",
+        zIndex: 100,
+        backgroundColor: "#FFF",
+        padding: "2px",
+        borderRadius: "8px",
+        boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 3px -2px, rgba(0, 0, 0, 0.14) 0px 3px 4px 0px, rgba(0, 0, 0, 0.12) 0px 1px 8px 0px",
+        '& video':
         {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-        },
-        bottomRightButtons:
+            borderRadius: "6px",
+        }
+    },
+    fullVideo:
+    {
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "#010101",
+        borderRadius: 0,
+        '& video':
         {
-            position: "absolute",
-            right: theme.spacing(2),
-            bottom: theme.spacing(2),
-        },
-        hoverButton:
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+        }
+    },
+    halfVideo:
+    {
+        width: "50%",
+        height: "50%",
+        flex: "0 0 50%",
+        backgroundColor: "#010101",
+        borderRadius: 0,
+        '& video':
         {
-            backgroundColor: "rgba(0,0,0,0.5)",
-            color: "#fff",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.5), 0 6px 12px rgba(0,0,0,0.5)",
-            border: "2px solid rgba(255, 255, 255, 1)",
-            margin: theme.spacing(2),
-            "&:hover":
-            {
-                backgroundColor: theme.palette.info.main + "F0",
-            }
-        },
-    }
-);
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+        }
+    },
+    roundedVideo:
+    {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+    },
+    bottomRightButtons:
+    {
+        position: "absolute",
+        right: 2,
+        bottom: 2,
+    },
+    hoverButton:
+    {
+        backgroundColor: "rgba(0,0,0,0.5)",
+        color: "#fff",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.5), 0 6px 12px rgba(0,0,0,0.5)",
+        border: "2px solid rgba(255, 255, 255, 1)",
+        margin: 2,
+        "&:hover":
+        {
+            backgroundColor: theme => alpha(theme.palette.info.main, 0.8),
+        }
+    },
+};
 
 class Video extends React.PureComponent
 {
@@ -133,8 +131,6 @@ class Video extends React.PureComponent
 
         if (peers[id])
         {
-            // console.log("createPeer", "ALREADY THERE!?", id, peers[id]);
-
             return peers[id];
         }
 
@@ -161,8 +157,6 @@ class Video extends React.PureComponent
             const remoteStreams = { ...this.state.remoteStreams };
 
             remoteStreams[id] = stream;
-
-            console.log("deb.1 remote-streams", remoteStreams);
 
             this.setState({ remoteStreams });
         });
@@ -223,8 +217,6 @@ class Video extends React.PureComponent
 
         socket.on("sockets", ({ sockets, peerConfig }) =>
         {
-            console.log("sockets", socket.id, sockets, peerConfig);
-
             this.setState({ connected: true, peerConfig });
 
             for (const id in sockets)
@@ -238,16 +230,12 @@ class Video extends React.PureComponent
 
         socket.on("message", message =>
         {
-            console.log("message", socket.id, message);
-
             if (message?.type === "disconnected")
             {
                 this.destroyPeer(message.from);
             }
             else if (message?.type === "toggle-stream")
             {
-                console.log(message, this.state.peers);
-
                 const remoteStreams = { ...this.state.remoteStreams };
 
                 remoteStreams[message.from]._enabled = message.enabled;
@@ -320,12 +308,8 @@ class Video extends React.PureComponent
 
     setRemoteVideoStream = (ref, stream) =>
     {
-        console.log("set-remote-video-stream", stream, ref);
-
         if (ref && stream instanceof MediaStream && ref.srcObject !== stream)
         {
-            console.log("set-remote-video-stream-old", ref.srcObject);
-
             ref.srcObject = stream;
         }
     }
@@ -341,25 +325,27 @@ class Video extends React.PureComponent
 
     getUserMedia(facingMode = null)
     {
-        return new Promise((resolve, reject) =>
+        return new Promise((resolve, _reject) =>
         {
-            getStream(facingMode).then(stream =>
-            {
-                if (this.localVideo)
+            getStream(facingMode)
+                .then(stream =>
                 {
-                    this.localVideo.srcObject = stream;
-                    this.localVideo.muted = "";
-                }
+                    if (this.localVideo)
+                    {
+                        this.localVideo.srcObject = stream;
+                        this.localVideo.muted = "";
+                    }
 
-                this.setState({ localStream: stream, facingMode: facingMode });
+                    this.setState({ localStream: stream, facingMode: facingMode });
 
-                // setTimeout(() => { resolve(); }, 3000);
-                resolve();
+                    // setTimeout(() => { resolve(); }, 3000);
+                    resolve();
 
-            }).catch(error =>
-            {
-                console.log("err", error);
-            });
+                })
+                .catch(error =>
+                {
+                    console.err(error);
+                });
         });
     }
 
@@ -409,8 +395,6 @@ class Video extends React.PureComponent
 
     render()
     {
-        const { classes } = this.props;
-
         const remoteUsers = Object.keys(this.state.remoteStreams).length;
         const activeUsers = Object.values(this.state.remoteStreams).reduce((count, stream) => count += stream._enabled !== false ? 1 : 0, 0);
 
@@ -418,73 +402,74 @@ class Video extends React.PureComponent
 
         if (activeUsers === 0)
         {
-            localVideoClass = classes.fullVideo;
-            remoteVideoClass = classes.hidden;
+            localVideoClass = sx.fullVideo;
+            remoteVideoClass = sx.hidden;
         }
         else
         {
-            localVideoClass = classes.floatingVideo;
-            remoteVideoClass = classes.fullVideo;
+            localVideoClass = sx.floatingVideo;
+            remoteVideoClass = sx.fullVideo;
 
             if (activeUsers > 1)
             {
-                localVideoClass = remoteVideoClass = classes.halfVideo;
+                localVideoClass = remoteVideoClass = sx.halfVideo;
             }
         }
 
         return (
-            <div id="videoWrapper" className={classes.videoWrapper}>
+            <Box id="videoWrapper" sx={sx.videoWrapper}>
 
                 {/* the local stream ... */}
                 {this.state.localDisabled !== true &&
-                    < div id="localVideoWrapper" className={localVideoClass}>
-                        <video
+                    <Box id="localVideoWrapper" sx={localVideoClass}>
+                        <Box
+                            component="video"
                             id="localVideo"
-                            className={classes.roundedVideo}
+                            sx={sx.roundedVideo}
                             ref={this.setLocalVideoStream}
                             autoPlay
                             playsInline
                         />
-                    </div>
+                    </Box>
                 }
 
                 {/* the remote streams ... */}
                 {
                     Object.entries(this.state.remoteStreams).map(([id, stream]) => (
                         stream._enabled !== false &&
-                        <div key={"remote-stream-" + id} className={remoteVideoClass}>
+                        <Box key={"remote-stream-" + id} sx={remoteVideoClass}>
                             <video
                                 id={"remote-video-" + id}
                                 ref={ref => this.setRemoteVideoStream(ref, stream)}
                                 autoPlay
                                 playsInline
                             />
-                        </div>
+                        </Box>
                     ))
                 }
 
                 <Notifications connected={this.state.connected} active={remoteUsers > 0} />
 
-                <div className={classes.bottomRightButtons}>
+                <Box sx={sx.bottomRightButtons}>
                     {remoteUsers > 0 &&
                         <>
-                            <IconButton className={classes.hoverButton} onClick={e => this.toggleCamera(e)}>
+                            <IconButton sx={sx.hoverButton} onClick={e => this.toggleCamera(e)}>
                                 <FlipCameraIcon />
                             </IconButton>
-                            <IconButton className={classes.hoverButton} onClick={e => this.toggleLocalStream(e)}>
+                            <IconButton sx={sx.hoverButton} onClick={e => this.toggleLocalStream(e)}>
                                 {this.state.localDisabled ? <VideocamOnIcon /> : <VideocamOffIcon />}
                             </IconButton>
                         </>
                     }
                     {this.props.closeAction &&
-                        <IconButton className={classes.hoverButton} onClick={this.props.closeAction}>
+                        <IconButton sx={sx.hoverButton} onClick={this.props.closeAction}>
                             <CancelIcon />
                         </IconButton>
                     }
-                </div>
-            </div >
+                </Box>
+            </Box>
         )
     }
 }
 
-export default withStyles(styles)(Video);
+export default Video;

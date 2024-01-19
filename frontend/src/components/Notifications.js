@@ -1,27 +1,30 @@
-import React from 'react'
-
-import { withStyles } from '@mui/material/styles';
-
+import { Box, alpha } from '@mui/material';
 import MuiAlert from '@mui/lab/Alert';
 
-const styles = theme => (
+const sx =
+{
+    notifications:
     {
-        notifications:
-        {
-            position: "absolute",
-            left: theme.spacing(-2),
-            top: theme.spacing(2),
-            zIndex: 100,
-        },
-        hoverButtonInfo:
-        {
-            backgroundColor: theme.palette.primary.dark + "F0",
-            margin: theme.spacing(1),
-            fontWeight: "bold",
-            borderRadius: theme.spacing(1),
-        },
-    }
-);
+        position: "absolute",
+        left: -2,
+        top: 2,
+        zIndex: 100,
+    },
+    hoverButtonInfo:
+    {
+        backgroundColor: theme => alpha(theme.palette.primary.dark, 0.8),
+        margin: 1,
+        fontWeight: "bold",
+        borderRadius: 1,
+    },
+    hoverButtonWarning:
+    {
+        backgroundColor: theme => alpha(theme.palette.warning.dark, 0.8),
+        margin: 1,
+        fontWeight: "bold",
+        borderRadius: 1,
+    },
+};
 
 function Alert(props)
 {
@@ -49,18 +52,18 @@ function Notifications(props)
     }
 
     return (
-        <div className={props.classes.notifications}>
+        <Box sx={sx.notifications}>
             {elements.map(el =>
                 <Alert
                     key={"vid-a-" + el.id}
                     severity={el.severity}
-                    className={el.severity === "info" ? props.classes.hoverButtonInfo : props.classes.hoverButtonWarning}
+                    sx={el.severity === "info" ? sx.hoverButtonInfo : sx.hoverButtonWarning}
                 >
                     {el.text}
                 </Alert>)
             }
-        </div>
+        </Box>
     );
 }
 
-export default withStyles(styles)(Notifications);
+export default Notifications;
