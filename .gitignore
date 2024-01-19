@@ -26,3 +26,6 @@
 **/.idea
 **/.history
 **/.*.swp
+
+**/.bit
+frontend/dist
