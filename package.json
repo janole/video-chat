@@ -13,6 +13,6 @@
   "author": "Jan Ole Suhr <ole@janole.com> (https://janole.com)",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^5.2.0"
+    "concurrently": "^8.2.2"
   }
 }
