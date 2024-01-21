@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
 import { Container, Box, Card, CardContent, Typography, TextField, CardActions, Button, CardHeader } from '@mui/material';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -55,11 +56,12 @@ const sxHome =
 
 function Home(props)
 {
+    const navigate = useNavigate();
     const [code, setCode] = useState("");
 
     const startCall = () => 
     {
-        props.history.push("/call/" + code);
+        navigate("/call/" + code);
     };
 
     return (

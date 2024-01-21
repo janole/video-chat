@@ -1,4 +1,4 @@
-import Peer from 'simple-peer'
+import Peer from 'simple-peer-light';
 
 import { selectCodec, setMediaBitrate } from "./SdpUtils";
 
@@ -14,8 +14,6 @@ const createSimplePeer = (stream, initiator, config) =>
         PEER_ICE_SERVERS,
         PEER_DEBUG,
     } = config || {};
-
-    console.log(config, PEER_ICE_TRANSPORT_POLICY);
 
     const peer = new Peer(
         {
@@ -39,8 +37,6 @@ const createSimplePeer = (stream, initiator, config) =>
                 {
                     sdp = setMediaBitrate(sdp, "video", PEER_VIDEO_BITRATE);
                 }
-
-                // console.log(sdp);
 
                 return sdp;
             },
