@@ -1,5 +1,4 @@
-import { Box, alpha } from '@mui/material';
-import MuiAlert from '@mui/lab/Alert';
+import { Alert as MuiAlert, Box, alpha } from '@mui/material';
 
 const sx =
 {
