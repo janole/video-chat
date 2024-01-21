@@ -143,7 +143,7 @@ class Video extends React.PureComponent
             const signal =
             {
                 from: this.state.socket.id,
-                room: id,
+                room: this.props.roomId,
                 desc: data,
             }
 
