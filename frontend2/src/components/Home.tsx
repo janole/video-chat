@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Box, Card, CardContent, Typography, TextField, CardActions, Button, CardHeader, Theme } from '@mui/material';
 import { ContactPhone, GitHub } from '@mui/icons-material';
 
-import { version as PACKAGE_VERSION } from "../../../package.json";
+import { version as PACKAGE_VERSION } from "../../package.json";
 
 const sxHome =
 {

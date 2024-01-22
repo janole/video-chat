@@ -1,4 +1,4 @@
-import { Alert as MuiAlert, Box, alpha } from '@mui/material';
+import { Alert as MuiAlert, AlertColor, AlertProps, Box, Theme, alpha } from '@mui/material';
 
 const sx =
 {
@@ -11,26 +11,32 @@ const sx =
     },
     hoverButtonInfo:
     {
-        backgroundColor: theme => alpha(theme.palette.primary.dark, 0.8),
+        backgroundColor: (theme: Theme) => alpha(theme.palette.primary.dark, 0.8),
         margin: 1,
         fontWeight: "bold",
         borderRadius: 1,
     },
     hoverButtonWarning:
     {
-        backgroundColor: theme => alpha(theme.palette.warning.dark, 0.8),
+        backgroundColor: (theme: Theme) => alpha(theme.palette.warning.dark, 0.8),
         margin: 1,
         fontWeight: "bold",
         borderRadius: 1,
     },
 };
 
-function Alert(props)
+function Alert(props: AlertProps)
 {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-function Notifications(props)
+interface NotificationsProps
+{
+    connected?: boolean;
+    active?: boolean;
+}
+
+function Notifications(props: NotificationsProps)
 {
     const elements = [];
 
@@ -55,7 +61,7 @@ function Notifications(props)
             {elements.map(el =>
                 <Alert
                     key={"vid-a-" + el.id}
-                    severity={el.severity}
+                    severity={el.severity as AlertColor}
                     sx={el.severity === "info" ? sx.hoverButtonInfo : sx.hoverButtonWarning}
                 >
                     {el.text}
