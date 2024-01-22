@@ -1,19 +1,19 @@
 import React from 'react'
 
-import { Box, IconButton, alpha } from '@mui/material';
+import { Box, IconButton, SxProps, Theme, alpha } from '@mui/material';
 
 import FlipCameraIcon from '@mui/icons-material/FlipCameraAndroid';
 import VideocamOnIcon from '@mui/icons-material/Visibility';
 import VideocamOffIcon from '@mui/icons-material/VisibilityOff';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-import io from 'socket.io-client'
+import io, { Socket } from 'socket.io-client';
 import { getStream } from '../utils/MediaUtils';
 import { createSimplePeer } from '../utils/PeerUtils';
 
 import Notifications from './Notifications';
 
-const sx =
+const sx: { [key: string]: SxProps<Theme> } =
 {
     videoWrapper:
     {
@@ -105,14 +105,33 @@ const sx =
         margin: 2,
         "&:hover":
         {
-            backgroundColor: theme => alpha(theme.palette.info.main, 0.8),
+            backgroundColor: (theme: Theme) => alpha(theme.palette.info.main, 0.8),
         }
     },
 };
 
-class Video extends React.PureComponent
+interface IVideoState
 {
-    state = {
+    socket?: Socket;
+    localStream?: MediaStream;
+    remoteStreams: { [key: string]: IMediaStream };
+    peers: { [key: string]: Instance };
+    connected: boolean;
+    facingMode: string;
+    localDisabled: boolean;
+    peerConfig: IPeerConfig;
+}
+
+interface VideoProps
+{
+    roomId: string;
+    signalServer: string;
+    closeAction?: React.MouseEventHandler<HTMLButtonElement>;
+}
+
+class Video extends React.PureComponent<VideoProps>
+{
+    state: IVideoState = {
         socket: {},
         localStream: {},
         remoteStreams: {},
@@ -125,7 +144,7 @@ class Video extends React.PureComponent
 
     getPeer = id => this.createPeer(id, false);
 
-    createPeer = (id, initiator) =>
+    createPeer = (id: string, initiator: boolean) =>
     {
         const peers = this.state.peers;
 
@@ -178,13 +197,13 @@ class Video extends React.PureComponent
         return peer;
     };
 
-    destroyPeer = (id) =>
+    destroyPeer = (id: string) =>
     {
         const peers = this.state.peers;
 
         if (peers[id])
         {
-            if (peers[id].destroy !== "undefined")
+            if (typeof peers[id].destroy === "function")
             {
                 peers[id].destroy();
             }
@@ -199,6 +218,7 @@ class Video extends React.PureComponent
 
     componentDidMount()
     {
+        console.log("mount");
         const socket = io(this.props.signalServer);
 
         this.setState({ socket });
@@ -396,7 +416,7 @@ class Video extends React.PureComponent
         const remoteUsers = Object.keys(this.state.remoteStreams).length;
         const activeUsers = Object.values(this.state.remoteStreams).reduce((count, stream) => count += stream._enabled !== false ? 1 : 0, 0);
 
-        let localVideoClass, remoteVideoClass;
+        let localVideoClass: SxProps<Theme>, remoteVideoClass: SxProps<Theme>;
 
         if (activeUsers === 0)
         {
@@ -451,10 +471,10 @@ class Video extends React.PureComponent
                 <Box sx={sx.bottomRightButtons}>
                     {remoteUsers > 0 &&
                         <>
-                            <IconButton sx={sx.hoverButton} onClick={e => this.toggleCamera(e)}>
+                            <IconButton sx={sx.hoverButton} onClick={e => this.toggleCamera()}>
                                 <FlipCameraIcon />
                             </IconButton>
-                            <IconButton sx={sx.hoverButton} onClick={e => this.toggleLocalStream(e)}>
+                            <IconButton sx={sx.hoverButton} onClick={e => this.toggleLocalStream()}>
                                 {this.state.localDisabled ? <VideocamOnIcon /> : <VideocamOffIcon />}
                             </IconButton>
                         </>
