@@ -168,7 +168,7 @@ class Video extends React.PureComponent
             // this.setState({ connecting: true, remoteStream: {}, peer: {} });
         });
 
-        peer.on('error', err =>
+        peer.on('error', () =>
         {
             this.destroyPeer(id);
 
@@ -325,7 +325,7 @@ class Video extends React.PureComponent
 
     getUserMedia(facingMode = null)
     {
-        return new Promise((resolve, _reject) =>
+        return new Promise((resolve) =>
         {
             getStream(facingMode)
                 .then(stream =>
@@ -351,8 +351,6 @@ class Video extends React.PureComponent
 
     toggleLocalStream = () =>
     {
-        // this.state.peer.addStream(this.state.localStream);
-
         const tracks = this.state.localStream.getTracks();
 
         for (const track of tracks)
