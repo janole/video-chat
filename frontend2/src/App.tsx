@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material';
 
-function App() {
-  const [count, setCount] = useState(0)
+import Video from "./components/Video";
+import Home from "./components/Home";
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+declare global
+{
+  interface Window { _env_: { SIGNAL_SERVER: string }; }
 }
 
-export default App
+const theme = createTheme();
+
+function VideoWrapper()
+{
+  const params = useParams();
+  const navigate = useNavigate();
+
+  const closeAction = () => navigate("/");
+
+  console.log(window._env_.SIGNAL_SERVER);
+
+  return (
+    <Video
+      roomId={params.roomId!}
+      closeAction={closeAction}
+      signalServer={window._env_.SIGNAL_SERVER}
+    />
+  );
+}
+
+function App()
+{
+  return (
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <Routes>
+          <Route path="/call/:roomId/:flags?" element={<VideoWrapper />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </ThemeProvider>
+    </BrowserRouter>
+  );
+}
+
+export default App;
