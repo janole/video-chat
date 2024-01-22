@@ -19,6 +19,7 @@
     "@mui/material": "^5.15.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.3",
     "simple-peer-light": "^9.10.0",
     "socket.io-client": "^2.5.0",
     "webrtc-adapter": "^8.2.3"
