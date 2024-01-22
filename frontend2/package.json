@@ -1,8 +1,9 @@
 {
-  "name": "frontend2",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "video-chat-frontend",
+  "version": "1.5.0",
+  "author": "Jan Ole Suhr <ole@janole.com> (https://janole.com)",
+  "license": "MIT",
+  "imageBase": "janole/video-chat-",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -17,7 +18,10 @@
     "@mui/lab": "^5.0.0-alpha.161",
     "@mui/material": "^5.15.5",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "simple-peer-light": "^9.10.0",
+    "socket.io-client": "^2.5.0",
+    "webrtc-adapter": "^8.2.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
