@@ -1,0 +1,32 @@
+<IfModule mod_expires.c>
+
+    # Cache everything for a month ...
+    ExpiresActive On
+    ExpiresDefault "access 1 month"
+
+</IfModule>
+
+<IfModule mod_headers.c>
+
+    # DO NOT cache main index.html, configuration env.js and the manifest ...
+    <FilesMatch "(index\.html|env\.js|manifest\.json)">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires 0
+    </FilesMatch>
+
+</IfModule>
+
+<IfModule mod_rewrite.c>
+
+    RewriteEngine On
+
+    # If an existing asset or directory is requested go to it as it is
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+    RewriteRule ^ - [L]
+
+    # If the requested resource doesn't exist, use index.html
+    RewriteRule ^ /index.html
+
+</IfModule>
