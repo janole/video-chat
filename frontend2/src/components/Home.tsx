@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
-import { Container, Box, Card, CardContent, Typography, TextField, CardActions, Button, CardHeader } from '@mui/material';
-import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
-import GitHubIcon from '@mui/icons-material/GitHub';
+import { Container, Box, Card, CardContent, Typography, TextField, CardActions, Button, CardHeader, Theme } from '@mui/material';
+import { ContactPhone, GitHub } from '@mui/icons-material';
 
-import { version as PACKAGE_VERSION } from "../../package.json";
+import { version as PACKAGE_VERSION } from "../../../package.json";
 
 const sxHome =
 {
@@ -41,7 +40,7 @@ const sxHome =
     cardHeader:
     {
         background: 'linear-gradient(45deg, #CC88FF 20%, #223377 90%)',
-        color: theme => theme.palette.primary.contrastText,
+        color: (theme: Theme) => theme.palette.primary.contrastText,
         padding: 0.72,
     },
     footer:
@@ -54,9 +53,10 @@ const sxHome =
     },
 }
 
-function Home(props)
+function Home()
 {
     const navigate = useNavigate();
+
     const [code, setCode] = useState("");
 
     const startCall = () => 
@@ -75,7 +75,7 @@ function Home(props)
                                 Simple Video-Chat Demo
                             </Typography>
 
-                            <Box fontSize="subtitle1.fontSize" lineHeight={1.5} component="p" color="text.primary" mt={2} mb={3}>
+                            <Box fontSize="subtitle1.fontSize" lineHeight={1.5} color="text.primary" mt={2} mb={3}>
                                 Please enter a Room ID to join a video chat ...
                             </Box>
 
@@ -86,7 +86,7 @@ function Home(props)
                         </CardContent>
 
                         <CardActions>
-                            <Button size="large" color="primary" disabled={code.trim().length === 0} startIcon={<ContactPhoneIcon />} onClick={startCall}>Start video chat</Button>
+                            <Button size="large" color="primary" disabled={code.trim().length === 0} startIcon={<ContactPhone />} onClick={startCall}>Start video chat</Button>
                         </CardActions>
                     </Card>
                 </Box>
@@ -101,7 +101,7 @@ function Home(props)
             <Box sx={sxHome.background} />
 
             <Box sx={sxHome.footer}>
-                <Button color="inherit" startIcon={<GitHubIcon />} href="https://github.com/janole/video-chat">github</Button>
+                <Button color="inherit" startIcon={<GitHub />} href="https://github.com/janole/video-chat">github</Button>
                 <Button disabled style={{ textTransform: "none" }}>v {import.meta.env.REACT_APP_VERSION || PACKAGE_VERSION}</Button>
             </Box>
         </Box>
