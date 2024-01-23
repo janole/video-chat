@@ -7,7 +7,9 @@ import VideocamOnIcon from '@mui/icons-material/Visibility';
 import VideocamOffIcon from '@mui/icons-material/VisibilityOff';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-import io, { Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
+import { v4 as uuidv4 } from 'uuid';
+
 import { getStream } from '../utils/MediaUtils';
 import { createSimplePeer } from '../utils/PeerUtils';
 
@@ -112,6 +114,7 @@ const sx: { [key: string]: SxProps<Theme> } =
 
 interface IVideoState
 {
+    id: string;
     socket?: Socket;
     localStream?: MediaStream;
     remoteStreams: { [key: string]: IMediaStream };
@@ -132,6 +135,7 @@ interface VideoProps
 class Video extends React.PureComponent<VideoProps>
 {
     state: IVideoState = {
+        id: uuidv4(),
         socket: {},
         localStream: {},
         remoteStreams: {},
@@ -142,7 +146,7 @@ class Video extends React.PureComponent<VideoProps>
         peerConfig: {},
     };
 
-    getPeer = id => this.createPeer(id, false);
+    getPeer = (id: string) => this.createPeer(id, false);
 
     createPeer = (id: string, initiator: boolean) =>
     {
@@ -161,7 +165,7 @@ class Video extends React.PureComponent<VideoProps>
         {
             const signal =
             {
-                from: this.state.socket.id,
+                from: this.state.id,
                 room: this.props.roomId,
                 desc: data,
             }
@@ -219,9 +223,15 @@ class Video extends React.PureComponent<VideoProps>
     componentDidMount()
     {
         console.log("mount");
-        const socket = io(this.props.signalServer);
+        const socket = io(this.props.signalServer, { autoConnect: false });
 
-        this.setState({ socket });
+        socket.auth = { username: this.state.id };
+        socket.connect();
+
+        socket.onAny((event, ...args) => 
+        {
+            console.log("E", event, args);
+        });
 
         const roomId = this.props.roomId;
 
@@ -239,13 +249,11 @@ class Video extends React.PureComponent<VideoProps>
         {
             this.setState({ connected: true, peerConfig });
 
-            for (const id in sockets)
+            sockets.filter((id: string) => id != this.state.id).forEach((id: string) =>
             {
-                if (id !== socket.id)
-                {
-                    this.createPeer(id, true);
-                }
-            };
+                console.log("SOCKETS: CREATE-PEER", id, this.state.id, sockets);
+                this.createPeer(id, true);
+            });
         });
 
         socket.on("message", message =>
@@ -263,6 +271,8 @@ class Video extends React.PureComponent<VideoProps>
                 this.setState({ remoteStreams: remoteStreams });
             }
         });
+
+        this.setState({ socket });
 
         window.addEventListener('pagehide', this.onPageHide);
     }
@@ -343,7 +353,7 @@ class Video extends React.PureComponent<VideoProps>
         }
     }
 
-    getUserMedia(facingMode = null)
+    getUserMedia(facingMode: string)
     {
         return new Promise((resolve) =>
         {
@@ -381,7 +391,7 @@ class Video extends React.PureComponent<VideoProps>
 
                 this.setState({ localDisabled: !track.enabled });
 
-                this.state.socket.emit("message", { room: this.props.roomId, data: { type: "toggle-stream", from: this.state.socket.id, enabled: track.enabled } });
+                this.state.socket.emit("message", { room: this.props.roomId, data: { type: "toggle-stream", from: this.state.id, enabled: track.enabled } });
 
                 break;
             }
