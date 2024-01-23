@@ -1,12 +1,12 @@
 {
   "name": "video-chat",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A simple WebRTC video chat app (React + Node)",
   "homepage": "https://video.janole.com",
   "image": "janole/video-chat",
   "scripts": {
     "postinstall": "concurrently 'cd frontend && npm ci' 'cd backend && npm ci'",
-    "dev": "concurrently 'cd backend && npm run dev' 'cd frontend && npm start'",
+    "dev": "concurrently 'cd backend && npm run dev' 'cd frontend && npm run dev'",
     "docker:build": "concurrently 'cd frontend && npm run docker:build' 'cd backend && npm run docker:build'",
     "version": "echo $(echo $npm_package_version | sed 's/\\.[0-9]*$//').$(git rev-list HEAD --count)"
   },
