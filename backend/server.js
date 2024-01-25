@@ -18,7 +18,18 @@ console.log("* Server started on " + port);
 //
 io.on("connection", (socket) =>
 {
-    socket.username = socket.handshake.auth.username;
+    const username = socket.handshake.auth.username;
+
+    // disconnect previous socket with same id
+    io.fetchSockets().then(sockets =>
+    {
+        sockets.filter(s => s.username === username).forEach(s =>
+        {
+            s.disconnect();
+        });
+
+        socket.username = username;
+    });
 
     socket.on("enter", (data) =>
     {
@@ -29,7 +40,7 @@ io.on("connection", (socket) =>
         {
             const config = peerConfig.get(data.roomId, process.env.TURN_SECRET);
 
-            console.log("enter", socket.roomId);
+            console.log("enter", socket.roomId, socket.username, sockets.map(s => s.id));
 
             socket.emit("sockets", {
                 sockets: sockets.map(s => s.username),
