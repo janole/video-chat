@@ -14,6 +14,7 @@ import { getStream } from '../utils/MediaUtils';
 import { createSimplePeer } from '../utils/PeerUtils';
 
 import Notifications from './Notifications';
+import { Instance } from 'simple-peer';
 
 const sx: { [key: string]: SxProps<Theme> } =
 {
@@ -112,6 +113,22 @@ const sx: { [key: string]: SxProps<Theme> } =
     },
 };
 
+interface IMediaStream extends MediaStream
+{
+    _enabled?: boolean;
+}
+
+export interface IPeerConfig
+{
+    PEER_ICE_TRANSPORT_POLICY?: RTCIceTransportPolicy;
+    PEER_VIDEO_CODEC?: string;
+    PEER_AUDIO_CODEC?: string;
+    PEER_VIDEO_BITRATE?: number;
+    PEER_ICE_SERVERS?: RTCIceServer[];
+
+    PEER_DEBUG?: (message?: unknown, ...optionalParams: unknown[]) => void;
+}
+
 interface IVideoState
 {
     id: string;
@@ -136,8 +153,6 @@ class Video extends React.PureComponent<VideoProps>
 {
     state: IVideoState = {
         id: uuidv4(),
-        socket: {},
-        localStream: {},
         remoteStreams: {},
         peers: {},
         connected: false,
@@ -145,6 +160,8 @@ class Video extends React.PureComponent<VideoProps>
         localDisabled: false,
         peerConfig: {},
     };
+
+    localVideo?: HTMLVideoElement;
 
     getPeer = (id: string) => this.createPeer(id, false);
 
@@ -157,11 +174,16 @@ class Video extends React.PureComponent<VideoProps>
             return peers[id];
         }
 
+        if (!this.state.localStream)
+        {
+            return;
+        }
+
         const peer = peers[id] = createSimplePeer(this.state.localStream, initiator, this.state.peerConfig);
 
         this.setState({ peers: { ...peers } });
 
-        peer.on("signal", data =>
+        peer.on("signal", (data: unknown) =>
         {
             const signal =
             {
@@ -170,13 +192,11 @@ class Video extends React.PureComponent<VideoProps>
                 desc: data,
             }
 
-            this.state.socket.emit("signal", signal)
+            this.state.socket?.emit("signal", signal)
         });
 
-        peer.on("stream", stream =>
+        peer.on("stream", (stream: IMediaStream) =>
         {
-            // if (this.state.remoteStreams[id]) return;
-
             const remoteStreams = { ...this.state.remoteStreams };
 
             remoteStreams[id] = stream;
@@ -222,16 +242,10 @@ class Video extends React.PureComponent<VideoProps>
 
     componentDidMount()
     {
-        console.log("mount");
         const socket = io(this.props.signalServer, { autoConnect: false });
 
         socket.auth = { username: this.state.id };
         socket.connect();
-
-        socket.onAny((event, ...args) => 
-        {
-            console.log("E", event, args);
-        });
 
         const roomId = this.props.roomId;
 
@@ -268,7 +282,7 @@ class Video extends React.PureComponent<VideoProps>
 
                 remoteStreams[message.from]._enabled = message.enabled;
 
-                this.setState({ remoteStreams: remoteStreams });
+                this.setState({ remoteStreams });
             }
         });
 
@@ -279,30 +293,19 @@ class Video extends React.PureComponent<VideoProps>
 
     disconnect = () =>
     {
-        if (typeof this.state.socket?.close !== "undefined")
-        {
-            this.state.socket.close();
-        }
+        this.state.socket?.disconnect();
+        this.state.socket?.close();
 
-        if (typeof this.state.localStream?.getTracks !== "undefined")
-        {
-            this.state.localStream.getTracks().forEach(track => track.stop());
-        }
+        this.state.localStream?.getTracks().forEach(track => track.stop());
 
         for (const stream of Object.values(this.state.remoteStreams))
         {
-            if (typeof stream?.getTracks !== "undefined")
-            {
-                stream.getTracks().forEach(track => track.stop());
-            }
+            stream.getTracks().forEach(track => track.stop());
         }
 
-        for (const peer of Object.values(this.state.peers))
+        for (const peer of Object.keys(this.state.peers))
         {
-            if (typeof peer?.destroy !== "undefined")
-            {
-                peer.destroy();
-            }
+            this.destroyPeer(peer);
         }
 
         this.setState({ socket: null, connected: false, localStream: {}, remoteStreams: {}, peers: {} });
@@ -318,29 +321,27 @@ class Video extends React.PureComponent<VideoProps>
         window.removeEventListener('pagehide', this.onPageHide);
 
         this.disconnect();
+        this.localVideo = undefined;
     }
 
-    setLocalVideoStream = ref =>
+    setLocalVideoStream = (localVideo: HTMLVideoElement) =>
     {
-        if ((this.localVideo = ref))
+        if ((this.localVideo = localVideo))
         {
-            // ref.muted = true;
-            // ref.setAttribute("muted", "");
-
-            if (ref.srcObject !== this.state.localStream && this.state.localStream instanceof MediaStream)
+            if (localVideo.srcObject !== this.state.localStream && this.state.localStream instanceof MediaStream)
             {
-                ref.srcObject = this.state.localStream;
-                ref.muted = true;
-                ref.setAttribute("muted", "");
+                localVideo.srcObject = this.state.localStream;
+                localVideo.muted = true;
+                localVideo.setAttribute("muted", "");
             }
         }
     }
 
-    setRemoteVideoStream = (ref, stream) =>
+    setRemoteVideoStream = (video: HTMLVideoElement | null, stream: MediaStream) =>
     {
-        if (ref && stream instanceof MediaStream && ref.srcObject !== stream)
+        if (video && stream instanceof MediaStream && video.srcObject !== stream)
         {
-            ref.srcObject = stream;
+            video.srcObject = stream;
         }
     }
 
@@ -355,7 +356,7 @@ class Video extends React.PureComponent<VideoProps>
 
     getUserMedia(facingMode: string)
     {
-        return new Promise((resolve) =>
+        return new Promise<void>((resolve) =>
         {
             getStream(facingMode)
                 .then(stream =>
@@ -363,25 +364,23 @@ class Video extends React.PureComponent<VideoProps>
                     if (this.localVideo)
                     {
                         this.localVideo.srcObject = stream;
-                        this.localVideo.muted = "";
+                        this.localVideo.muted = false;
                     }
 
                     this.setState({ localStream: stream, facingMode: facingMode });
 
-                    // setTimeout(() => { resolve(); }, 3000);
                     resolve();
-
                 })
                 .catch(error =>
                 {
-                    console.err(error);
+                    console.error(error);
                 });
         });
     }
 
     toggleLocalStream = () =>
     {
-        const tracks = this.state.localStream.getTracks();
+        const tracks = this.state.localStream?.getTracks() ?? [];
 
         for (const track of tracks)
         {
@@ -391,7 +390,7 @@ class Video extends React.PureComponent<VideoProps>
 
                 this.setState({ localDisabled: !track.enabled });
 
-                this.state.socket.emit("message", { room: this.props.roomId, data: { type: "toggle-stream", from: this.state.id, enabled: track.enabled } });
+                this.state.socket?.emit("message", { room: this.props.roomId, data: { type: "toggle-stream", from: this.state.id, enabled: track.enabled } });
 
                 break;
             }
@@ -400,23 +399,30 @@ class Video extends React.PureComponent<VideoProps>
 
     toggleCamera = () =>
     {
-        this.state.localStream.getTracks().forEach(track => track.stop());
-
         if (this.localVideo)
         {
             this.localVideo.srcObject = null;
         }
 
+        const localStream = this.state.localStream;
+
+        if (!localStream)
+        {
+            return;
+        }
+
+        localStream.getTracks().forEach(track => track.stop());
+
         Object.keys(this.state.peers).forEach(id =>
         {
-            this.state.peers[id].removeStream(this.state.localStream);
+            this.state.peers[id].removeStream(localStream);
         });
 
         this.getUserMedia(this.state.facingMode === "user" ? "environment" : "user").then(() => 
         {
             Object.keys(this.state.peers).forEach(id =>
             {
-                this.state.peers[id].addStream(this.state.localStream);
+                this.state.peers[id].addStream(localStream);
             });
         });
     }
@@ -445,14 +451,13 @@ class Video extends React.PureComponent<VideoProps>
         }
 
         return (
-            <Box id="videoWrapper" sx={sx.videoWrapper}>
+            <Box sx={sx.videoWrapper}>
 
                 {/* the local stream ... */}
                 {this.state.localDisabled !== true &&
-                    <Box id="localVideoWrapper" sx={localVideoClass}>
+                    <Box sx={localVideoClass}>
                         <Box
                             component="video"
-                            id="localVideo"
                             sx={sx.roundedVideo}
                             ref={this.setLocalVideoStream}
                             autoPlay
@@ -467,7 +472,6 @@ class Video extends React.PureComponent<VideoProps>
                         stream._enabled !== false &&
                         <Box key={"remote-stream-" + id} sx={remoteVideoClass}>
                             <video
-                                id={"remote-video-" + id}
                                 ref={ref => this.setRemoteVideoStream(ref, stream)}
                                 autoPlay
                                 playsInline
@@ -481,10 +485,10 @@ class Video extends React.PureComponent<VideoProps>
                 <Box sx={sx.bottomRightButtons}>
                     {remoteUsers > 0 &&
                         <>
-                            <IconButton sx={sx.hoverButton} onClick={e => this.toggleCamera()}>
+                            <IconButton sx={sx.hoverButton} onClick={() => this.toggleCamera()}>
                                 <FlipCameraIcon />
                             </IconButton>
-                            <IconButton sx={sx.hoverButton} onClick={e => this.toggleLocalStream()}>
+                            <IconButton sx={sx.hoverButton} onClick={() => this.toggleLocalStream()}>
                                 {this.state.localDisabled ? <VideocamOnIcon /> : <VideocamOffIcon />}
                             </IconButton>
                         </>
