@@ -17,4 +17,4 @@ RUN true \
     #
     && true
 
-COPY ./build /usr/local/apache2/htdocs/
+COPY ./dist /usr/local/apache2/htdocs/
