@@ -11,7 +11,7 @@
     "version": "echo $(echo $npm_package_version | sed 's/\\.[0-9]*$//').$(git rev-list HEAD --count)"
   },
   "dependencies": {
-    "express": "^4.16.4",
+    "express": "^4.19.2",
     "socket.io": "^2.5.0"
   },
   "devDependencies": {
