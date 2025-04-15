@@ -59,8 +59,9 @@ function Home(props)
     const navigate = useNavigate();
     const [code, setCode] = useState("");
 
-    const startCall = () => 
+    const startCall = (event) => 
     {
+        event.preventDefault();
         navigate("/call/" + code);
     };
 
