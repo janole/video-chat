@@ -184,7 +184,7 @@ class Video extends React.PureComponent
 
         if (peers[id])
         {
-            if (peers[id].destroy !== "undefined")
+            if (typeof peers[id].destroy !== "undefined")
             {
                 peers[id].destroy();
             }
