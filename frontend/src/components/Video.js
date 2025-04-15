@@ -333,7 +333,7 @@ class Video extends React.PureComponent
                     if (this.localVideo)
                     {
                         this.localVideo.srcObject = stream;
-                        this.localVideo.muted = "";
+                        this.localVideo.muted = false;
                     }
 
                     this.setState({ localStream: stream, facingMode: facingMode });
