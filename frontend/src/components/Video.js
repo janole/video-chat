@@ -344,7 +344,7 @@ class Video extends React.PureComponent
                 })
                 .catch(error =>
                 {
-                    console.err(error);
+                    console.error(error);
                 });
         });
     }
