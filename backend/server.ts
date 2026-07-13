@@ -73,7 +73,6 @@ interface MessagePayload
 const app = express();
 const server = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, {
-    allowEIO3: true,
     cors: { origin: "*" },
 });
 
