@@ -10,7 +10,9 @@ import { get as getPeerConfig } from "./peer-config.js";
 const MAX_ROOM_SIZE = 8;
 const ROOM_ID_MAX_LENGTH = 128;
 const ENTER_RATE_LIMIT = { limit: 1, windowMilliseconds: 1_000 };
-const TRAFFIC_RATE_LIMIT = { limit: 30, windowMilliseconds: 1_000 };
+// Sized for the join burst: up to MAX_ROOM_SIZE - 1 simultaneous negotiations, each with an offer/answer plus trickle ICE candidates.
+const SIGNAL_RATE_LIMIT = { limit: 200, windowMilliseconds: 1_000 };
+const MESSAGE_RATE_LIMIT = { limit: 30, windowMilliseconds: 1_000 };
 const NO_CACHE_FILES = new Set(["env.js", "index.html", "manifest.json"]);
 
 interface RateLimitState
@@ -22,8 +24,9 @@ interface RateLimitState
 interface SocketData
 {
     enterRateLimit?: RateLimitState;
+    messageRateLimit?: RateLimitState;
     roomId?: string;
-    trafficRateLimit?: RateLimitState;
+    signalRateLimit?: RateLimitState;
 }
 
 interface ServerError
@@ -209,8 +212,8 @@ io.on("connection", (socket) =>
 
     socket.on("signal", async (data) =>
     {
-        const rateLimit = exceedsRateLimit(socket.data.trafficRateLimit, TRAFFIC_RATE_LIMIT.limit, TRAFFIC_RATE_LIMIT.windowMilliseconds);
-        socket.data.trafficRateLimit = rateLimit.state;
+        const rateLimit = exceedsRateLimit(socket.data.signalRateLimit, SIGNAL_RATE_LIMIT.limit, SIGNAL_RATE_LIMIT.windowMilliseconds);
+        socket.data.signalRateLimit = rateLimit.state;
 
         if (rateLimit.exceeded)
         {
@@ -247,8 +250,8 @@ io.on("connection", (socket) =>
 
     socket.on("message", (message) =>
     {
-        const rateLimit = exceedsRateLimit(socket.data.trafficRateLimit, TRAFFIC_RATE_LIMIT.limit, TRAFFIC_RATE_LIMIT.windowMilliseconds);
-        socket.data.trafficRateLimit = rateLimit.state;
+        const rateLimit = exceedsRateLimit(socket.data.messageRateLimit, MESSAGE_RATE_LIMIT.limit, MESSAGE_RATE_LIMIT.windowMilliseconds);
+        socket.data.messageRateLimit = rateLimit.state;
 
         if (rateLimit.exceeded)
         {
