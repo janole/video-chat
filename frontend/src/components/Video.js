@@ -7,11 +7,11 @@ import VideocamOnIcon from '@mui/icons-material/Visibility';
 import VideocamOffIcon from '@mui/icons-material/VisibilityOff';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-import io from 'socket.io-client'
+import { io } from 'socket.io-client'
 import { getStream } from '../utils/MediaUtils';
 import { createSimplePeer } from '../utils/PeerUtils';
 
-import Notifications from './Notifications';
+import Notifications from './notifications';
 
 const sx =
 {
@@ -168,7 +168,7 @@ class Video extends React.PureComponent
             // this.setState({ connecting: true, remoteStream: {}, peer: {} });
         });
 
-        peer.on('error', err =>
+        peer.on('error', () =>
         {
             this.destroyPeer(id);
 

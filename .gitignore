@@ -7,9 +7,12 @@
 
 # testing
 **/coverage
+.eslintcache
 
 # production
 **/build
+**/dist
+*.tsbuildinfo
 
 # misc
 **/.DS_Store
@@ -28,4 +31,3 @@
 **/.*.swp
 
 **/.bit
-frontend/dist

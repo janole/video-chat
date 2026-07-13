@@ -1,52 +1,63 @@
 # video-chat
 
-A Simple Video Chat Demo based on React and WebRTC
+A simple video chat demo based on React and WebRTC.
 
-## Installation
+## Requirements
 
-The project root contains scripts to cover both the frontend and backend at the same time. To install, just type:
+- Node.js 22 or newer
+- pnpm 10.33.3
 
-```Shell
-$ npm install
+## Development
+
+Install the frontend and backend workspace dependencies:
+
+```shell
+pnpm install
 ```
 
-Now you can simply start the signalling server and the frontend app by typing:
-```Shell
-$ npm run dev
+Start the Vite frontend and signaling server together:
+
+```shell
+pnpm run dev
 ```
 
-After a short while, the video chat should be available at: http://localhost:3000.
+The frontend is available at <http://localhost:5173> and the signaling server
+listens on port 4999 by default.
 
-## Building and deployment
+Run the same build, formatting, lint, and test gate used before committing:
 
-There are two simple Dockerfiles included in the project. You can build both the frontend and backend images by running:
-
-```Shell
-$ npm run docker:build
+```shell
+pnpm run ok
 ```
 
-### Configuration
+The production frontend bundle is written to `frontend/dist/`.
 
-#### Backend/Signaling Server
+## Configuration
 
-The configuration of the backend is done through __ENVIRONMENT__ variables:
+### Backend signaling server
 
-|Name            |Description                                                         |Default
-|----------------|--------------------------------------------------------------------|--------
-|__LISTEN_PORT__ |The port number for the socket.io signaling server                  |__4999__
-|__TURN_SERVERS__|A comma-separated list of TURN servers ("turn:server.com")          |__None__
-|__TURN_SECRET__ |The auth secret used for accessing the TURN server via TURN REST API|__None__
-|__STUN_SERVERS__|A comma-separated list of STUN servers ("stun:server.com")          |__None__
+Configure the backend with environment variables:
 
-#### Frontend
+| Name | Description | Default |
+| --- | --- | --- |
+| `LISTEN_PORT` | Socket.IO signaling-server port | `4999` |
+| `TURN_SERVERS` | Comma-separated TURN server URLs, such as `turn:server.com` | None |
+| `TURN_SECRET` | Shared secret for TURN REST credentials | None |
+| `STUN_SERVERS` | Comma-separated STUN server URLs, such as `stun:server.com` | None |
 
-The configuration of the frontend is (currently) done by volume-sharing the [env.js](https://github.com/janole/video-chat/blob/master/frontend/public/env.js) file to: ``/usr/local/apache2/htdocs/env.js`` into the running frontend container.
+### Frontend
 
-#### STUN/TURN server setup (coturn)
+Runtime frontend configuration lives in `frontend/public/env.js`. For the
+container image, mount a replacement at
+`/usr/local/apache2/htdocs/env.js` when deployment-specific signaling settings
+are needed.
 
-Start the coturn docker image [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn) with the following parameters:
+### STUN/TURN server setup with coturn
 
-```Dockerfile
+One option is the [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn)
+container:
+
+```yaml
 services:
   coturn:
     image: instrumentisto/coturn
@@ -56,8 +67,7 @@ services:
     command: ["-a", "-f", "--realm=videochat", "--log-file=stdout", "--min-port=49160", "--max-port=49200", "--external-ip=$$(detect-external-ip)", "--use-auth-secret", "--static-auth-secret=the-turn-secret-see-above"]
 ```
 
-* Configure the firewall to open up UDP ports `--min-port` to `--max-port` (49160-49200 in the example above.)
-* The `--static-auth-secret` needs to be the same as the `TURN_SECRET` configured for the signaling server.
-
----
-## Have fun!
+- Open the configured UDP range in the firewall. The example uses
+  ports 49160-49200.
+- Set `TURN_SECRET` on the signaling server to the same value as coturn's
+  `--static-auth-secret`.
