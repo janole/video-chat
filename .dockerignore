@@ -1,0 +1,7 @@
+**/.env*
+**/coverage
+**/dist
+**/node_modules
+.git
+*.log
+.DS_Store

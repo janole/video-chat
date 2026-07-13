@@ -1,20 +1,27 @@
 {
-  "name": "server",
-  "version": "1.4.0",
-  "author": "Jan Ole Suhr <ole@janole.com> (https://janole.com)",
-  "license": "MIT",
-  "imageBase": "janole/video-chat-",
+  "name": "video-chat-backend",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "start": "node server",
-    "dev": "nodemon server",
-    "docker:build": "docker build -t ${IMAGE_BASE:-$npm_package_imageBase}backend:${IMAGE_VERSION:-$(npm run --silent version)} .",
-    "version": "echo $(echo $npm_package_version | sed 's/\\.[0-9]*$//').$(git rev-list HEAD --count)"
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch server.ts",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "express": "^4.16.4",
-    "socket.io": "^2.5.0"
+    "express": "^5.0.0",
+    "socket.io": "^4.8.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.22.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
   }
 }

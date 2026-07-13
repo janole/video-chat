@@ -1,49 +1,39 @@
 {
   "name": "video-chat-frontend",
-  "version": "1.4.0",
-  "author": "Jan Ole Suhr <ole@janole.com> (https://janole.com)",
-  "license": "MIT",
-  "imageBase": "janole/video-chat-",
-  "dependencies": {
-    "@emotion/react": "^11.4.1",
-    "@emotion/styled": "^11.3.0",
-    "@fontsource/roboto": "^5.0.8",
-    "@mui/icons-material": "^5.0.0",
-    "@mui/lab": "^5.0.0-alpha.47",
-    "@mui/material": "^5.0.0",
-    "react": "^17.0.2",
-    "react-app-polyfill": "^1.0.6",
-    "react-dom": "^17.0.2",
-    "react-router-dom": "^6.21.3",
-    "simple-peer-light": "^9.10.0",
-    "socket.io-client": "^2.5.0",
-    "webrtc-adapter": "^8.2.3"
-  },
-  "devDependencies": {
-    "react-scripts": "4.0.3"
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predocker:build": "env REACT_APP_VERSION=${IMAGE_VERSION:-$(npm run --silent version)} npm run build",
-    "docker:build": "docker build -t ${IMAGE_BASE:-$npm_package_imageBase}frontend:${IMAGE_VERSION:-$(npm run --silent version)} .",
-    "version": "echo $(echo $npm_package_version | sed 's/\\.[0-9]*$//').$(git rev-list HEAD --count)"
+    "dev": "vite",
+    "build": "pnpm run typecheck && vite build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+    "preview": "vite preview"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@fontsource/roboto": "^5.2.8",
+    "@mui/icons-material": "^9.0.0",
+    "@mui/material": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router": "^8.0.0",
+    "socket.io-client": "^4.8.1",
+    "webrtc-adapter": "^9.0.3"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "^6.0.0",
+    "jsdom": "^27.0.0",
+    "typescript": "^5.9.0",
+    "vite": "^8.0.0",
+    "vitest": "^3.2.0"
   }
 }

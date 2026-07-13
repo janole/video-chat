@@ -1,5 +1,5 @@
 window._env_ =
 {
-    // the socket.io signalling server
+    // Development default. Use an empty string for same-origin production deployments.
     "SIGNAL_SERVER": "ws://localhost:4999",
 };
