@@ -105,7 +105,7 @@ name: video-chat
 
 services:
   app:
-    image: ghcr.io/janole/video-chat:v2.0.0
+    image: ghcr.io/janole/video-chat:v2.0.1
     restart: unless-stopped
     environment:
       STUN_SERVERS: "stun:stun.video.example.com:3478"
