@@ -15,6 +15,10 @@
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
     "build": "pnpm -r run build",
+    "docker:image": "node -e \"console.log(process.env.DOCKER_IMAGE ?? 'janole/video-chat')\"",
+    "docker:platform": "node -e \"console.log(process.env.DOCKER_PLATFORM ?? ('linux/' + (process.arch === 'arm64' ? 'arm64' : 'amd64')))\"",
+    "docker:build": "docker buildx build --pull --load --platform $(pnpm -s docker:platform) -t $(pnpm -s docker:image):$npm_package_version .",
+    "docker:push": "docker push $(pnpm -s docker:image):$npm_package_version",
     "lint": "eslint . --cache --cache-strategy content",
     "lint:fix": "eslint . --cache --cache-strategy content --fix",
     "test": "pnpm -r run test",

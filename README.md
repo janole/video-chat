@@ -22,7 +22,8 @@ pnpm run dev
 ```
 
 The frontend is available at <http://localhost:5173> and the signaling server
-listens on port 4999 by default.
+listens on port 4999 by default. The development `env.js` points the browser at
+`ws://localhost:4999`; Socket.IO uses its default `/socket.io` path.
 
 Run the same build, formatting, lint, and test gate used before committing:
 
@@ -30,18 +31,19 @@ Run the same build, formatting, lint, and test gate used before committing:
 pnpm run ok
 ```
 
-The production frontend bundle is written to `frontend/dist/`.
+The production frontend bundle is written to `frontend/dist/`, and the backend
+build is written to `backend/dist/`.
 
-Build the backend container from the repository root so Docker can use the
-workspace lockfile:
+Build the single production image from the repository root:
 
 ```shell
-docker build -f backend/Dockerfile -t video-chat-backend .
+docker build -t video-chat .
 ```
 
-Production deployments should terminate TLS in front of both the frontend and
-signaling server so Socket.IO uses WSS. Browsers also require a secure HTTPS
-context for camera and microphone access outside localhost.
+The image exposes port 4999. One Express server serves the frontend, health API,
+SPA fallback, and Socket.IO endpoint. Production deployments should terminate
+TLS in front of this container so Socket.IO uses WSS. Browsers also require a
+secure HTTPS context for camera and microphone access outside localhost.
 
 ## Configuration
 
@@ -51,7 +53,8 @@ Configure the backend with environment variables:
 
 | Name | Description | Default |
 | --- | --- | --- |
-| `LISTEN_PORT` | Socket.IO signaling-server port | `4999` |
+| `LISTEN_PORT` | Express and Socket.IO server port | `4999` |
+| `FRONTEND_DIST` | Path to the built frontend served by Express | `../frontend/dist` |
 | `TURN_SERVERS` | Comma-separated TURN server URLs, such as `turn:server.com` | None |
 | `TURN_SECRET` | Shared secret for TURN REST credentials | None |
 | `STUN_SERVERS` | Comma-separated STUN server URLs, such as `stun:server.com` | None |
@@ -59,9 +62,15 @@ Configure the backend with environment variables:
 ### Frontend
 
 Runtime frontend configuration lives in `frontend/public/env.js`. For the
-container image, mount a replacement at
-`/usr/local/apache2/htdocs/env.js` when deployment-specific signaling settings
-are needed.
+container image, mount a replacement at `/usr/src/app/frontend/dist/env.js`.
+Set `SIGNAL_SERVER` to an empty string for the normal same-origin production
+setup, or to an explicit signaling-server URL when needed. The committed value
+is `ws://localhost:4999` so `pnpm run dev` works without extra configuration.
+
+Express gives hashed files under `/assets/` a one-year immutable cache policy.
+It prevents caching of `index.html`, `env.js`, and `manifest.json`, and serves
+`index.html` for non-API deep links such as `/call/example-room`. The health
+endpoint is available at `/health`, and Socket.IO uses `/socket.io`.
 
 ### STUN/TURN server setup with coturn
 

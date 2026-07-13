@@ -1,5 +1,7 @@
 import { createServer } from "node:http";
+import path from "node:path";
 
+import type { Response } from "express";
 import express from "express";
 import { Server } from "socket.io";
 
@@ -9,6 +11,7 @@ const MAX_ROOM_SIZE = 8;
 const ROOM_ID_MAX_LENGTH = 128;
 const ENTER_RATE_LIMIT = { limit: 1, windowMilliseconds: 1_000 };
 const TRAFFIC_RATE_LIMIT = { limit: 30, windowMilliseconds: 1_000 };
+const NO_CACHE_FILES = new Set(["env.js", "index.html", "manifest.json"]);
 
 interface RateLimitState
 {
@@ -69,10 +72,37 @@ const server = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, {
     allowEIO3: true,
     cors: { origin: "*" },
-    path: "/",
 });
 
 const port = process.env.LISTEN_PORT || 4999;
+const frontendDist = path.resolve(process.env.FRONTEND_DIST ?? "../frontend/dist");
+
+function setStaticCacheHeaders(response: Response, filePath: string): void
+{
+    const relativeFilePath = path.relative(frontendDist, filePath);
+
+    if (relativeFilePath.startsWith(`assets${path.sep}`))
+    {
+        response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    }
+    else if (NO_CACHE_FILES.has(path.basename(filePath)))
+    {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    }
+}
+
+app.get("/health", (_request, response) =>
+{
+    response.json({ ok: true });
+});
+
+app.use(express.static(frontendDist, { setHeaders: setStaticCacheHeaders }));
+
+app.get(/^(?!\/(?:api|socket\.io)(?:\/|$)).*/, (_request, response) =>
+{
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.sendFile("index.html", { root: frontendDist });
+});
 
 function isRecord(value: unknown): value is Record<string, unknown>
 {
