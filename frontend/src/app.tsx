@@ -4,7 +4,7 @@ import { Box, createTheme, ThemeProvider } from "@mui/material";
 import { BrowserRouter, Navigate, Route, Routes, useNavigate, useParams } from "react-router";
 
 import Home from "./components/home";
-import Video from "./components/Video";
+import Video from "./components/video";
 
 const theme = createTheme();
 

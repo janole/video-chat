@@ -111,9 +111,6 @@ importers:
       react-router:
         specifier: ^8.0.0
         version: 8.2.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      simple-peer-light:
-        specifier: ^9.10.0
-        version: 9.10.0
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.3
@@ -2175,9 +2172,6 @@ packages:
 
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
-
-  simple-peer-light@9.10.0:
-    resolution: {integrity: sha512-E0INlXmVy2XvVkyMallKYQlcTAD8S0ov+goSVDGD2k9vwkjBCOyFmESoUsv0Pi7P3nSh6TuMIIi+S/YRok9WLg==}
 
   socket.io-adapter@2.5.8:
     resolution: {integrity: sha512-6Oy52pbg+kvdCVvjcN+FnY7BvxZ7cIHNScbvztT/It5d0vbwoJoVZmF2gjJmnV0/4WlXRfG15zc45ySk9Ah8bw==}
@@ -4539,8 +4533,6 @@ snapshots:
       side-channel-weakmap: 1.0.2
 
   siginfo@2.0.0: {}
-
-  simple-peer-light@9.10.0: {}
 
   socket.io-adapter@2.5.8:
     dependencies:
