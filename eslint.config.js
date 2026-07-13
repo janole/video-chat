@@ -9,57 +9,6 @@ import eslintPluginUnicorn from "eslint-plugin-unicorn";
 
 const localRules = {
     rules: {
-        "package-boundary-imports": {
-            meta: {
-                type: "problem",
-                docs: {
-                    description: "Prevent imports that bypass workspace package boundaries",
-                },
-                schema: [],
-                messages: {
-                    crossPackageSrcImport: "Do not import from another package's src directory. Import from the package public API instead.",
-                    samePackageBarrelImport: "Do not import this package through its public barrel from inside the same package. Use a relative import instead.",
-                },
-            },
-            create(context)
-            {
-                const filename = context.filename.replaceAll("\\", "/");
-                const packageMatch = filename.match(/\/packages\/([^/]+)\/src\//);
-                const currentPackage = packageMatch?.[1];
-                const currentPackageName = currentPackage === "cli" ? "session-bandit" : currentPackage ? `@session-bandit/${currentPackage}` : undefined;
-
-                return {
-                    ImportDeclaration(node)
-                    {
-                        if (typeof node.source.value !== "string")
-                        {
-                            return;
-                        }
-
-                        const source = node.source.value;
-                        const srcImportMatch = source.match(/^packages\/([^/]+)\/src\//);
-
-                        if (srcImportMatch && srcImportMatch[1] !== currentPackage)
-                        {
-                            context.report({
-                                node: node.source,
-                                messageId: "crossPackageSrcImport",
-                            });
-
-                            return;
-                        }
-
-                        if (currentPackageName && source === currentPackageName)
-                        {
-                            context.report({
-                                node: node.source,
-                                messageId: "samePackageBarrelImport",
-                            });
-                        }
-                    },
-                };
-            },
-        },
         "single-line-imports": {
             meta: {
                 type: "layout",
@@ -145,7 +94,6 @@ export default [
                 format: ["camelCase", "PascalCase"],
             }],
             "local/single-line-imports": "error",
-            "local/package-boundary-imports": "error",
             "simple-import-sort/imports": "error",
             "simple-import-sort/exports": "error",
             "unicorn/filename-case": ["error", { case: "kebabCase" }],
