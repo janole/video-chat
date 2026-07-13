@@ -374,6 +374,14 @@ export function createPeer(options: CreatePeerOptions): PeerConnection
         destroyed = true;
         window.clearTimeout(iceRestartTimer);
         bufferedCandidates.splice(0);
+
+        // Detach handlers before close so delayed callbacks from a destroyed peer
+        // cannot emit stale signals or trigger onClose/onRemoteStream on a
+        // replacement peer created after reconnect.
+        pc.onicecandidate = null;
+        pc.onnegotiationneeded = null;
+        pc.ontrack = null;
+        pc.onconnectionstatechange = null;
         pc.close();
     }
 

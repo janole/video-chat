@@ -241,7 +241,16 @@ function Video({ closeAction, roomId, signalServer }: VideoProps)
             config: peerConfigRef.current,
             localSocketId: activeSocket.id,
             localStream: localStream.current,
-            onClose: () => destroyPeer(peerId),
+            onClose: () =>
+            {
+                // Only destroy if this peer is still the active one for the id;
+                // a delayed close from a destroyed peer must not remove a
+                // replacement peer created after reconnect.
+                if (peers.current.get(peerId) === peer)
+                {
+                    destroyPeer(peerId);
+                }
+            },
             onRemoteStream: (stream) =>
             {
                 setParticipants((current) => ({

@@ -97,6 +97,81 @@ describe("derivePoliteRole", () =>
     });
 });
 
+describe("lifecycle", () =>
+{
+    it("detaches handlers on destroy so stale callbacks do not fire or signal", async () =>
+    {
+        const fake = new FakePeerConnection();
+        const sendSignal = vi.fn();
+        const onClose = vi.fn();
+        const onRemoteStream = vi.fn();
+        const peer = createPeer({
+            config: {
+                PEER_ICE_SERVERS: [],
+                PEER_ICE_TRANSPORT_POLICY: "all",
+            },
+            localSocketId: "aaa",
+            localStream: null,
+            onClose,
+            onRemoteStream,
+            peerConnectionFactory: () => fake as unknown as RTCPeerConnection,
+            remotePeerId: "zzz",
+            sendSignal,
+        });
+
+        peer.destroy();
+
+        // A queued signal after destroy must be a no-op.
+        await peer.handleSignal({ sdp: "late-offer", type: "offer" });
+        expect(fake.remoteDescriptions).toEqual([]);
+        expect(sendSignal).not.toHaveBeenCalled();
+
+        // Stale callbacks after destroy must not propagate.
+        const staleCandidate = { candidate: "stale", toJSON: () => ({ candidate: "stale" }) } as unknown as RTCIceCandidate;
+        fake.onicecandidate?.({ candidate: staleCandidate } as RTCPeerConnectionIceEvent);
+        fake.ontrack?.({ streams: [new MediaStream()], track: {} as MediaStreamTrack } as unknown as RTCTrackEvent);
+        fake.connectionState = "failed";
+        fake.onconnectionstatechange?.();
+        fake.connectionState = "closed";
+        fake.onconnectionstatechange?.();
+
+        expect(sendSignal).not.toHaveBeenCalled();
+        expect(onRemoteStream).not.toHaveBeenCalled();
+        expect(onClose).not.toHaveBeenCalled();
+    });
+
+    it("does not send stale ICE candidates after destroy even if onicecandidate fires", () =>
+    {
+        const fake = new FakePeerConnection();
+        const sendSignal = vi.fn();
+        const peer = createPeer({
+            config: {
+                PEER_ICE_SERVERS: [],
+                PEER_ICE_TRANSPORT_POLICY: "all",
+            },
+            localSocketId: "aaa",
+            localStream: null,
+            onClose: vi.fn(),
+            onRemoteStream: vi.fn(),
+            peerConnectionFactory: () => fake as unknown as RTCPeerConnection,
+            remotePeerId: "zzz",
+            sendSignal,
+        });
+
+        // Before destroy, a candidate is signaled.
+        const candidate = { candidate: "before-destroy", toJSON: () => ({ candidate: "before-destroy" }) } as unknown as RTCIceCandidate;
+        fake.onicecandidate?.({ candidate } as RTCPeerConnectionIceEvent);
+        expect(sendSignal).toHaveBeenCalledTimes(1);
+
+        peer.destroy();
+
+        // After destroy, the handler is detached and no signal is sent.
+        const staleCandidate = { candidate: "after-destroy", toJSON: () => ({ candidate: "after-destroy" }) } as unknown as RTCIceCandidate;
+        fake.onicecandidate?.({ candidate: staleCandidate } as RTCPeerConnectionIceEvent);
+        expect(sendSignal).toHaveBeenCalledTimes(1);
+    });
+});
+
 describe("perfect negotiation", () =>
 {
     it("buffers ICE candidates until the remote description is set", async () =>
