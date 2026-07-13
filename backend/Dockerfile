@@ -1,20 +1,34 @@
-FROM node:12-slim
+FROM node:22-slim AS build
 
-#
-ENV NODE_ENV=production
-
-# Create app directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
+RUN corepack enable
 
-RUN npm ci --only=production
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+COPY backend/package.json backend/tsconfig.json ./backend/
 
-# Bundle app source
-COPY . .
+RUN pnpm install --frozen-lockfile --filter video-chat-backend...
 
-EXPOSE 8080
-CMD [ "node", "server.js" ]
+COPY backend/peer-config.ts backend/server.ts ./backend/
+
+RUN pnpm --filter video-chat-backend run build
+
+FROM node:22-slim AS runtime
+
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
+
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY backend/package.json ./backend/
+
+RUN pnpm install --prod --frozen-lockfile --filter video-chat-backend...
+
+WORKDIR /usr/src/app/backend
+
+COPY --from=build /usr/src/app/backend/dist ./dist
+
+EXPOSE 4999
+
+CMD ["node", "dist/server.js"]

@@ -2,23 +2,26 @@
   "name": "video-chat-backend",
   "private": true,
   "version": "2.0.0",
-  "type": "commonjs",
+  "type": "module",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "build": "echo \"no build yet\"",
-    "test": "vitest run --passWithNoTests",
-    "typecheck": "echo \"no typecheck yet\""
+    "build": "tsc",
+    "dev": "tsx watch server.ts",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "express": "^4.16.4",
-    "socket.io": "^2.5.0"
+    "express": "^5.0.0",
+    "socket.io": "^4.8.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.22.0",
+    "typescript": "^5.9.0",
     "vitest": "^3.2.0"
   }
 }

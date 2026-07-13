@@ -32,6 +32,17 @@ pnpm run ok
 
 The production frontend bundle is written to `frontend/dist/`.
 
+Build the backend container from the repository root so Docker can use the
+workspace lockfile:
+
+```shell
+docker build -f backend/Dockerfile -t video-chat-backend .
+```
+
+Production deployments should terminate TLS in front of both the frontend and
+signaling server so Socket.IO uses WSS. Browsers also require a secure HTTPS
+context for camera and microphone access outside localhost.
+
 ## Configuration
 
 ### Backend signaling server
