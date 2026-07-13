@@ -13,7 +13,7 @@ const ENTER_RATE_LIMIT = { limit: 1, windowMilliseconds: 1_000 };
 // Sized for the join burst: up to MAX_ROOM_SIZE - 1 simultaneous negotiations, each with an offer/answer plus trickle ICE candidates.
 const SIGNAL_RATE_LIMIT = { limit: 200, windowMilliseconds: 1_000 };
 const MESSAGE_RATE_LIMIT = { limit: 30, windowMilliseconds: 1_000 };
-const NO_CACHE_FILES = new Set(["env.js", "index.html", "manifest.json"]);
+const NO_CACHE_FILES = new Set(["index.html", "manifest.json"]);
 
 interface RateLimitState
 {
@@ -72,9 +72,7 @@ interface MessagePayload
 
 const app = express();
 const server = createServer(app);
-const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, {
-    cors: { origin: "*" },
-});
+const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);
 
 const port = process.env.LISTEN_PORT || 4999;
 const frontendDist = path.resolve(process.env.FRONTEND_DIST ?? "../frontend/dist");

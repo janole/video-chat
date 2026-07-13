@@ -22,7 +22,6 @@ function VideoWrapper()
         <Video
             roomId={roomId}
             closeAction={() => navigate("/")}
-            signalServer={window._env_?.SIGNAL_SERVER}
         />
     );
 }

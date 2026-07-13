@@ -22,8 +22,9 @@ pnpm run dev
 ```
 
 The frontend is available at <http://localhost:5173> and the signaling server
-listens on port 4999 by default. The development `env.js` points the browser at
-`ws://localhost:4999`; Socket.IO uses its default `/socket.io` path.
+listens on port 4999 by default. Vite proxies `/socket.io` to the signaling
+server, so the browser talks to a single origin in development and production
+alike.
 
 Run the same build, formatting, lint, and test gate used before committing:
 
@@ -64,14 +65,11 @@ Configure the backend with environment variables:
 
 ### Frontend
 
-Runtime frontend configuration lives in `frontend/public/env.js`. For the
-container image, mount a replacement at `/usr/src/app/frontend/dist/env.js`.
-Set `SIGNAL_SERVER` to an empty string for the normal same-origin production
-setup, or to an explicit signaling-server URL when needed. The committed value
-is `ws://localhost:4999` so `pnpm run dev` works without extra configuration.
+The frontend needs no runtime configuration: it always connects to the
+signaling server on its own origin.
 
 Express gives hashed files under `/assets/` a one-year immutable cache policy.
-It prevents caching of `index.html`, `env.js`, and `manifest.json`, and serves
+It prevents caching of `index.html` and `manifest.json`, and serves
 `index.html` for non-API deep links such as `/call/example-room`. The health
 endpoint is available at `/health`, and Socket.IO uses `/socket.io`.
 
@@ -119,23 +117,12 @@ services:
       - "traefik.http.routers.video-chat.tls.certresolver=default"
       - "traefik.http.routers.video-chat.entrypoints=https"
       - "traefik.http.services.video-chat.loadbalancer.server.port=4999"
-    volumes:
-      - "./env.js:/usr/src/app/frontend/dist/env.js:ro"
     networks:
       - traefik
 
 networks:
   traefik:
     external: true
-```
-
-The mounted `env.js` keeps the signaling connection on the same origin:
-
-```js
-window._env_ =
-{
-    "SIGNAL_SERVER": "",
-};
 ```
 
 Frontend, signaling, and the `/health` endpoint are all served by this one

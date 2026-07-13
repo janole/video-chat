@@ -17,6 +17,12 @@ const config = {
     },
     server: {
         allowedHosts: ["video.janole.com"],
+        proxy: {
+            "/socket.io": {
+                target: "http://localhost:4999",
+                ws: true,
+            },
+        },
     },
     build: {
         outDir: "dist",

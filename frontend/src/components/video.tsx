@@ -18,7 +18,6 @@ interface VideoProps
 {
     closeAction?: () => void;
     roomId: string;
-    signalServer?: string;
 }
 
 interface RemoteParticipant
@@ -158,7 +157,7 @@ function stopStream(stream: MediaStream | null): void
     }
 }
 
-function Video({ closeAction, roomId, signalServer }: VideoProps)
+function Video({ closeAction, roomId }: VideoProps)
 {
     const socket = useRef<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
     const peers = useRef<Map<string, PeerConnection>>(new Map());
@@ -352,7 +351,7 @@ function Video({ closeAction, roomId, signalServer }: VideoProps)
             return;
         }
 
-        const activeSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io(signalServer, { autoConnect: false });
+        const activeSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({ autoConnect: false });
         socket.current = activeSocket;
 
         const onConnect = (): void =>
@@ -443,7 +442,7 @@ function Video({ closeAction, roomId, signalServer }: VideoProps)
             }
             destroyAllPeers();
         };
-    }, [destroyAllPeers, destroyPeer, ensurePeer, roomId, setParticipants, signalServer]);
+    }, [destroyAllPeers, destroyPeer, ensurePeer, roomId, setParticipants]);
 
     const disconnect = useCallback(() =>
     {
